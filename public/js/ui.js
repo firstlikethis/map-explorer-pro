@@ -157,14 +157,17 @@ function toggleLeaderboard() {
       }
     });
   }
+
+  function updateLeaderboard() {
+    loadLeaderboard();
+  }
   
-  // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
   document.addEventListener('DOMContentLoaded', () => {
-    // เพิ่ม event listener สำหรับปุ่มเปิด/ปิด Leaderboard
-    document.getElementById('toggle-leaderboard').addEventListener('click', toggleLeaderboard);
+    // เพิ่ม event listener สำหรับปุ่ม Leaderboard ให้เป็นการรีเฟรชแทน
+    document.getElementById('toggle-leaderboard').addEventListener('click', updateLeaderboard);
     
-    // เพิ่ม event listener สำหรับปุ่มปิด Leaderboard
-    document.getElementById('close-leaderboard').addEventListener('click', closeLeaderboard);
+    // โหลด Leaderboard เมื่อเริ่มต้น
+    updateLeaderboard();
     
     // ตั้งค่าการกด Enter สำหรับช่องค้นหา
     setupSearchEnterKey();

@@ -1,6 +1,6 @@
 /**
  * map.js - จัดการแผนที่และการเคลื่อนที่ของเครื่องบิน
- * Map Explorer PRO
+ * Map Explorer PRO - Pastel Cute Theme
  */
 
 // ตัวแปรแผนที่และองค์ประกอบต่างๆ
@@ -18,6 +18,16 @@ let currentDestination = '';
 // ตัวแปรควบคุมการเคลื่อนที่ของกล้อง
 let cameraFollow = true;
 let zoomOutTriggered = false;
+
+// สีสำหรับธีม Pastel
+const pastelColors = {
+  primary: '#ffb6c1',  // Pink
+  secondary: '#a5dee5',  // Light Blue
+  accent: '#fdfd96',    // Light Yellow
+  mint: '#b5ead7',     // Mint
+  lavender: '#e0c3fc',  // Lavender
+  peach: '#ffdab9'      // Peach
+};
 
 // ฟังก์ชันสำหรับเริ่มต้นแผนที่
 function initMap() {
@@ -38,28 +48,33 @@ function initMap() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
   
+  // ปรับแต่ง CSS ของแผนที่ให้เข้ากับธีม Pastel
+  document.querySelector('.leaflet-control-zoom').style.borderRadius = '20px';
+  document.querySelector('.leaflet-control-zoom').style.overflow = 'hidden';
+  document.querySelector('.leaflet-control-zoom').style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+  
   // เพิ่ม marker ของจุดเริ่มต้น
-  const initialIcon = createMarkerIcon('blue');
+  const initialIcon = createMarkerIcon('primary');
   
   currentMarker = L.marker([currentPosition.lat, currentPosition.lng], {
     icon: initialIcon
   }).addTo(map)
-    .bindPopup('Paris - จุดเริ่มต้น')
+    .bindPopup('<span style="font-family: Mali, sans-serif; color: #7c6c77;">🗼 Paris - จุดเริ่มต้น</span>')
     .openPopup();
   
-  // สร้างไอคอนเครื่องบินแบบ PRO ด้วย SVG
+  // สร้างไอคอนเครื่องบินแบบ PRO ด้วย SVG แบบน่ารัก
   const airplaneIcon = L.divIcon({
     html: `
-      <div class="airplane-container">
+      <div class="airplane-container animate-float">
         <div class="pulse-circle"></div>
-        <svg class="airplane-icon" viewBox="0 0 24 24" fill="#3498db" style="transform: rotate(0deg);">
+        <svg class="airplane-icon" viewBox="0 0 24 24" fill="${pastelColors.primary}" style="transform: rotate(0deg);">
           <path d="M21,16V14L13,9V3.5A1.5,1.5,0,0,0,11.5,2h0A1.5,1.5,0,0,0,10,3.5V9L2,14V16L10,13.5V19L8,20.5V22L11.5,21L15,22V20.5L13,19V13.5Z" />
         </svg>
       </div>
     `,
     className: '',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20]
+    iconSize: [45, 45],
+    iconAnchor: [22, 22]
   });
   
   // สร้าง marker สำหรับเครื่องบิน (แต่ยังไม่แสดงบนแผนที่)
@@ -73,34 +88,46 @@ function initMap() {
 }
 
 // ฟังก์ชันสร้าง marker icon ด้วยสีที่กำหนด
-function createMarkerIcon(color) {
-  let markerColor = '#3498db'; // ค่าเริ่มต้นเป็นสีฟ้า
+function createMarkerIcon(colorType) {
+  let markerColor = pastelColors.primary; // ค่าเริ่มต้นเป็นสีชมพู
   
-  switch(color) {
-    case 'red':
-      markerColor = '#e74c3c';
+  switch(colorType) {
+    case 'primary':
+      markerColor = pastelColors.primary;
       break;
-    case 'green':
-      markerColor = '#2ecc71';
+    case 'secondary':
+      markerColor = pastelColors.secondary;
       break;
-    case 'blue':
-      markerColor = '#3498db';
+    case 'accent':
+      markerColor = pastelColors.accent;
       break;
-    case 'orange':
-      markerColor = '#f39c12';
+    case 'mint':
+      markerColor = pastelColors.mint;
+      break;
+    case 'lavender':
+      markerColor = pastelColors.lavender;
+      break;
+    case 'peach':
+      markerColor = pastelColors.peach;
       break;
   }
   
+  // สร้าง marker icon แบบน่ารักๆ
   return L.divIcon({
     html: `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36">
-        <path fill="${markerColor}" d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
-      </svg>
+      <div class="animate-pulse" style="width: 40px; height: 40px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40">
+          <path fill="${markerColor}" d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z" />
+        </svg>
+        <div style="position: absolute; top: -5px; right: -5px; background-color: white; border-radius: 50%; width: 15px; height: 15px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+          <span style="font-size: 10px;">📍</span>
+        </div>
+      </div>
     `,
     className: '',
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -36]
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40]
   });
 }
 
@@ -109,7 +136,7 @@ async function navigateToDestination() {
   const destinationInput = document.getElementById('destination').value;
   
   if (!destinationInput) {
-    showNotification('กรุณากรอกชื่อสถานที่ปลายทาง', 'error');
+    showNotification('กรุณากรอกชื่อสถานที่ปลายทาง 🌍', 'error');
     return;
   }
   
@@ -150,38 +177,38 @@ async function navigateToDestination() {
       if (airplaneMarker && map.hasLayer(airplaneMarker)) map.removeLayer(airplaneMarker);
       
       // เพิ่ม marker สำหรับจุดหมาย
-      const destinationIcon = createMarkerIcon('red');
+      const destinationIcon = createMarkerIcon('lavender');
       
       destinationMarker = L.marker([destination.lat, destination.lng], {
         icon: destinationIcon
       }).addTo(map)
-        .bindPopup(`${destinationInput}`)
+        .bindPopup(`<span style="font-family: Mali, sans-serif; color: #7c6c77;">📍 ${destinationInput}</span>`)
         .openPopup();
       
       // วาดเส้นประระหว่างจุดเริ่มต้นกับจุดหมาย (เส้นที่ยังไม่ผ่าน)
       futureRouteLine = L.polyline([[currentPosition.lat, currentPosition.lng], [destination.lat, destination.lng]], {
-        color: '#3498db',
-        weight: 3,
+        color: pastelColors.lavender,
+        weight: 4,
         opacity: 0.7,
         dashArray: '10, 10' // สร้างเส้นประ
       }).addTo(map);
       
       // สร้างเส้นทางที่ผ่านไปแล้ว (ยังไม่แสดง)
       pastRouteLine = L.polyline([], {
-        color: '#bdc3c7',
-        weight: 3,
-        opacity: 0.3
+        color: pastelColors.peach,
+        weight: 4,
+        opacity: 0.5
       }).addTo(map);
       
       // ปรับ view ให้เห็นทั้งเส้นทาง
-      map.fitBounds(futureRouteLine.getBounds(), { padding: [50, 50] });
+      map.fitBounds(futureRouteLine.getBounds(), { padding: [70, 70] });
       
       // รีเซ็ตตัวแปรควบคุมกล้อง
       cameraFollow = true;
       zoomOutTriggered = false;
       
       // เริ่มต้นการเคลื่อนที่ของเครื่องบิน
-      showNotification(`กำลังเดินทางไปยัง ${destinationInput}`, 'info');
+      showNotification(`กำลังเดินทางไปยัง ${destinationInput} ✈️`, 'info');
       animateAirplane(currentPosition, destination);
     } else {
       // คืนค่าปุ่มกลับสู่สภาพปกติ
@@ -193,7 +220,7 @@ async function navigateToDestination() {
       `;
       navigateBtn.disabled = false;
       
-      showNotification(data.error || 'ไม่สามารถค้นหาสถานที่ได้', 'error');
+      showNotification(data.error || 'ไม่สามารถค้นหาสถานที่ได้ 😢', 'error');
     }
   } catch (error) {
     console.error('Error navigating:', error);
@@ -208,7 +235,7 @@ async function navigateToDestination() {
     `;
     navigateBtn.disabled = false;
     
-    showNotification('เกิดข้อผิดพลาดในการนำทาง', 'error');
+    showNotification('เกิดข้อผิดพลาดในการนำทาง 😢', 'error');
   }
 }
 
@@ -263,16 +290,16 @@ function animateAirplane(start, end) {
     // ถ้ายังไม่มี element ให้สร้าง icon ใหม่ด้วยมุมที่ถูกต้อง
     const rotatedIcon = L.divIcon({
       html: `
-        <div class="airplane-container">
+        <div class="airplane-container animate-float">
           <div class="pulse-circle"></div>
-          <svg class="airplane-icon" viewBox="0 0 24 24" fill="#3498db" style="transform: rotate(${angle}deg);">
+          <svg class="airplane-icon" viewBox="0 0 24 24" fill="${pastelColors.primary}" style="transform: rotate(${angle}deg);">
             <path d="M21,16V14L13,9V3.5A1.5,1.5,0,0,0,11.5,2h0A1.5,1.5,0,0,0,10,3.5V9L2,14V16L10,13.5V19L8,20.5V22L11.5,21L15,22V20.5L13,19V13.5Z" />
           </svg>
         </div>
       `,
       className: '',
-      iconSize: [40, 40],
-      iconAnchor: [20, 20]
+      iconSize: [45, 45],
+      iconAnchor: [22, 22]
     });
     airplaneMarker.setIcon(rotatedIcon);
   }
@@ -325,15 +352,16 @@ function animateAirplane(start, end) {
       const arrivalEffect = L.divIcon({
         html: `
           <div class="arrival-effect" style="
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(52,152,219,0.8) 0%, rgba(52,152,219,0) 70%);
-            animation: expand 1s ease-out forwards;
+            background: radial-gradient(circle, rgba(224, 195, 252, 0.8) 0%, rgba(224, 195, 252, 0) 70%);
+            animation: expand 1.2s ease-out forwards;
             position: absolute;
-            top: -50px;
-            left: -50px;
+            top: -60px;
+            left: -60px;
           "></div>
+          <div style="position: absolute; top: -20px; left: 0; width: 100%; text-align: center; font-size: 24px; animation: pop 0.5s forwards;">🎯</div>
         `,
         className: '',
         iconSize: [0, 0],
@@ -342,10 +370,10 @@ function animateAirplane(start, end) {
       
       const effectMarker = L.marker([end.lat, end.lng], { icon: arrivalEffect }).addTo(map);
       
-      // ลบเอฟเฟกต์หลังจาก 1 วินาที
+      // ลบเอฟเฟกต์หลังจาก 1.2 วินาที
       setTimeout(() => {
         map.removeLayer(effectMarker);
-      }, 1000);
+      }, 1200);
       
       // ลบเส้นทางทั้งหมดและเครื่องบิน
       if (pastRouteLine) map.removeLayer(pastRouteLine);
@@ -360,28 +388,30 @@ function animateAirplane(start, end) {
           duration: 1.5
         });
         
-        // ขั้นที่ 2: ซูมเข้าไประดับถนนหรือตึก (ใกล้มากๆ)
-        setTimeout(() => {
+        // รอให้ซูมแรกเสร็จ แล้วจึงซูมต่อ
+        map.once('moveend', function() {
+          // ขั้นที่ 2: ซูมเข้าไประดับถนนหรือตึก (ใกล้มากๆ)
           map.flyTo([end.lat, end.lng], 17, {
-            duration: 1.5,
-            // หลังจากซูมเสร็จแล้ว ให้เปิดกล่องให้คะแนน
-            callback: () => {
-              setTimeout(() => {
-                // อัพเดตตำแหน่งปัจจุบัน
-                currentPosition = end;
-                if (currentMarker) map.removeLayer(currentMarker);
-                currentMarker = destinationMarker;
-                
-                // แสดงกล่องให้คะแนน
-                console.log('Opening rating modal for:', currentDestination, end.lat, end.lng);
-                openRatingModal(currentDestination, end.lat, end.lng);
-                
-                // สิ้นสุดการเคลื่อนที่
-                animationInProgress = false;
-              }, 500);
-            }
+            duration: 1.5
           });
-        }, 1500);
+          
+          // รอให้ซูมที่สองเสร็จ แล้วจึงแสดงกล่องคะแนน
+          map.once('moveend', function() {
+            setTimeout(() => {
+              // อัพเดตตำแหน่งปัจจุบัน
+              currentPosition = end;
+              if (currentMarker) map.removeLayer(currentMarker);
+              currentMarker = destinationMarker;
+              
+              // แสดงกล่องให้คะแนน
+              console.log('Opening rating modal for:', currentDestination, end.lat, end.lng);
+              openRatingModal(currentDestination, end.lat, end.lng);
+              
+              // สิ้นสุดการเคลื่อนที่
+              animationInProgress = false;
+            }, 500);
+          });
+        });
       }, 200);
     }
   }
@@ -398,17 +428,21 @@ function showNotification(message, type = 'success', animate = false) {
   // กำหนดสีตามประเภทการแจ้งเตือน
   switch(type) {
     case 'error':
-      notification.style.background = '#e74c3c';
+      notification.style.background = pastelColors.primary; // Pink
+      notification.style.color = '#a24857';
       break;
     case 'warning':
-      notification.style.background = '#f39c12';
+      notification.style.background = pastelColors.accent; // Light Yellow
+      notification.style.color = '#8c7800';
       break;
     case 'info':
-      notification.style.background = '#3498db';
+      notification.style.background = pastelColors.secondary; // Light Blue
+      notification.style.color = '#336b72';
       break;
     case 'success':
     default:
-      notification.style.background = '#2ecc71';
+      notification.style.background = pastelColors.mint; // Mint Green
+      notification.style.color = '#2d7a5d';
       break;
   }
   

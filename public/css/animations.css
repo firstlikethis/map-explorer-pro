@@ -1,4 +1,4 @@
-/* animations.css - CSS สำหรับแอนิเมชั่นต่างๆ ใน Map Explorer PRO */
+/* animations.css - CSS สำหรับแอนิเมชั่นต่างๆ ใน Map Explorer PRO - Pastel Cute Theme */
 
 /* แอนิเมชั่นสำหรับเครื่องบิน */
 @keyframes pulse {
@@ -6,10 +6,22 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
   }
 }
 
@@ -19,7 +31,7 @@
     opacity: 0.8;
   }
   80%, 100% {
-    transform: scale(1.7);
+    transform: scale(2);
     opacity: 0;
   }
 }
@@ -31,7 +43,7 @@
     opacity: 1;
   }
   100% {
-    transform: scale(1.5);
+    transform: scale(1.8);
     opacity: 0;
   }
 }
@@ -53,32 +65,32 @@
     transform: translateY(0);
   }
   40% {
-    transform: translateY(-10px);
+    transform: translateY(-12px);
   }
   60% {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
   }
 }
 
 /* แอนิเมชั่นสำหรับเมื่อได้คะแนนสูง */
 @keyframes celebrate {
   0% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
   10% {
-    transform: scale(1.1);
+    transform: scale(1.1) rotate(-2deg);
   }
   20% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
   30% {
-    transform: scale(1.05);
+    transform: scale(1.05) rotate(2deg);
   }
   40% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
   100% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
 }
 
@@ -133,13 +145,13 @@
 /* แอนิเมชั่นสำหรับปุ่ม */
 @keyframes pulse-button {
   0% {
-    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+    box-shadow: 0 0 0 0 rgba(255, 182, 193, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+    box-shadow: 0 0 0 12px rgba(255, 182, 193, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+    box-shadow: 0 0 0 0 rgba(255, 182, 193, 0);
   }
 }
 
@@ -157,13 +169,13 @@
 
 @keyframes confetti-sway {
   0% {
-    transform: translateX(-5px);
+    transform: translateX(-8px);
   }
   50% {
-    transform: translateX(5px);
+    transform: translateX(8px);
   }
   100% {
-    transform: translateX(-5px);
+    transform: translateX(-8px);
   }
 }
 
@@ -173,14 +185,73 @@
     transform: scale(1);
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.6;
     transform: scale(0.8);
+  }
+}
+
+/* แอนิเมชันแบบน่ารักๆ */
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes heart-beat {
+  0% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.15);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.15);
+  }
+  60% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes rainbow {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
   }
 }
 
 /* คลาสที่ใช้ animator ต่างๆ */
 .animate-pulse {
   animation: pulse 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }
 
 .animate-bounce {
@@ -215,12 +286,28 @@
   animation: pulse-button 1.5s infinite;
 }
 
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out;
+}
+
+.animate-heart-beat {
+  animation: heart-beat 1.5s infinite;
+}
+
+.animate-pop {
+  animation: pop 0.5s forwards;
+}
+
+.animate-rainbow {
+  animation: rainbow 3s linear infinite;
+}
+
 /* คลาสสำหรับวงกลมเรืองแสงรอบเครื่องบิน */
 .pulse-circle {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: rgba(52, 152, 219, 0.2);
+  background-color: rgba(255, 182, 193, 0.3);
   position: absolute;
   top: -5px;
   left: -5px;
@@ -240,15 +327,15 @@
 
 .confetti {
   position: absolute;
-  width: 8px;
-  height: 16px;
-  background-color: #f1c40f;
-  animation: confetti-fall 3s linear forwards, confetti-sway 2s ease-in-out infinite;
+  width: 10px;
+  height: 18px;
+  background-color: var(--accent-color);
+  animation: confetti-fall 4s linear forwards, confetti-sway 2.5s ease-in-out infinite;
   z-index: 3000;
 }
 
 .star {
   position: absolute;
-  animation: star-twinkle 1.5s ease-in-out infinite;
+  animation: star-twinkle 2s ease-in-out infinite;
   z-index: 3000;
 }
