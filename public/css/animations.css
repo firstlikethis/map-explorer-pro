@@ -6,7 +6,7 @@
     transform: scale(1);
   }
   50% {
-    transform: scale(1.08);
+    transform: scale(1.1); /* เพิ่มขนาดจาก 1.08 เป็น 1.1 เพื่อให้เด่นชัดขึ้น */
   }
   100% {
     transform: scale(1);
@@ -18,7 +18,7 @@
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-6px) rotate(2deg);
+    transform: translateY(-8px) rotate(3deg); /* เพิ่มความสูงจาก -6px เป็น -8px และเพิ่มการหมุนจาก 2deg เป็น 3deg */
   }
   100% {
     transform: translateY(0px) rotate(0deg);
@@ -31,7 +31,7 @@
     opacity: 0.8;
   }
   80%, 100% {
-    transform: scale(2);
+    transform: scale(2.2); /* เพิ่มขนาดจาก 2 เป็น 2.2 */
     opacity: 0;
   }
 }
@@ -43,7 +43,7 @@
     opacity: 1;
   }
   100% {
-    transform: scale(1.8);
+    transform: scale(2); /* เพิ่มขนาดจาก 1.8 เป็น 2 */
     opacity: 0;
   }
 }
@@ -65,10 +65,10 @@
     transform: translateY(0);
   }
   40% {
-    transform: translateY(-12px);
+    transform: translateY(-15px); /* เพิ่มความสูงจาก -12px เป็น -15px */
   }
   60% {
-    transform: translateY(-6px);
+    transform: translateY(-8px); /* เพิ่มความสูงจาก -6px เป็น -8px */
   }
 }
 
@@ -78,13 +78,13 @@
     transform: scale(1) rotate(0deg);
   }
   10% {
-    transform: scale(1.1) rotate(-2deg);
+    transform: scale(1.15) rotate(-3deg); /* เพิ่มขนาดจาก 1.1 เป็น 1.15 และเพิ่มการหมุนจาก -2deg เป็น -3deg */
   }
   20% {
     transform: scale(1) rotate(0deg);
   }
   30% {
-    transform: scale(1.05) rotate(2deg);
+    transform: scale(1.1) rotate(3deg); /* เพิ่มขนาดจาก 1.05 เป็น 1.1 และเพิ่มการหมุนจาก 2deg เป็น 3deg */
   }
   40% {
     transform: scale(1) rotate(0deg);
@@ -145,13 +145,13 @@
 /* แอนิเมชั่นสำหรับปุ่ม */
 @keyframes pulse-button {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 182, 193, 0.7);
+    box-shadow: 0 0 0 0 rgba(255, 120, 169, 0.7); /* ปรับสีจาก rgba(255, 182, 193, 0.7) เป็น rgba(255, 120, 169, 0.7) */
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(255, 182, 193, 0);
+    box-shadow: 0 0 0 15px rgba(255, 120, 169, 0); /* เพิ่มขนาดจาก 12px เป็น 15px และปรับสี */
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 182, 193, 0);
+    box-shadow: 0 0 0 0 rgba(255, 120, 169, 0); /* ปรับสี */
   }
 }
 
@@ -162,20 +162,20 @@
     opacity: 1;
   }
   100% {
-    transform: translateY(calc(100vh + 100px)) rotate(360deg);
+    transform: translateY(calc(100vh + 100px)) rotate(420deg); /* เพิ่มการหมุนจาก 360deg เป็น 420deg */
     opacity: 0;
   }
 }
 
 @keyframes confetti-sway {
   0% {
-    transform: translateX(-8px);
+    transform: translateX(-10px); /* เพิ่มการเคลื่อนที่จาก -8px เป็น -10px */
   }
   50% {
-    transform: translateX(8px);
+    transform: translateX(10px); /* เพิ่มการเคลื่อนที่จาก 8px เป็น 10px */
   }
   100% {
-    transform: translateX(-8px);
+    transform: translateX(-10px); /* เพิ่มการเคลื่อนที่จาก -8px เป็น -10px */
   }
 }
 
@@ -185,8 +185,8 @@
     transform: scale(1);
   }
   50% {
-    opacity: 0.6;
-    transform: scale(0.8);
+    opacity: 0.5; /* ปรับความโปร่งใสจาก 0.6 เป็น 0.5 */
+    transform: scale(0.7); /* ปรับขนาดจาก 0.8 เป็น 0.7 */
   }
 }
 
@@ -196,10 +196,10 @@
     transform: rotate(0deg);
   }
   25% {
-    transform: rotate(5deg);
+    transform: rotate(7deg); /* เพิ่มการหมุนจาก 5deg เป็น 7deg */
   }
   75% {
-    transform: rotate(-5deg);
+    transform: rotate(-7deg); /* เพิ่มการหมุนจาก -5deg เป็น -7deg */
   }
 }
 
@@ -208,13 +208,13 @@
     transform: scale(1);
   }
   15% {
-    transform: scale(1.15);
+    transform: scale(1.2); /* เพิ่มขนาดจาก 1.15 เป็น 1.2 */
   }
   30% {
     transform: scale(1);
   }
   45% {
-    transform: scale(1.15);
+    transform: scale(1.2); /* เพิ่มขนาดจาก 1.15 เป็น 1.2 */
   }
   60% {
     transform: scale(1);
@@ -227,7 +227,7 @@
     opacity: 0;
   }
   70% {
-    transform: scale(1.1);
+    transform: scale(1.15); /* เพิ่มขนาดจาก 1.1 เป็น 1.15 */
     opacity: 1;
   }
   100% {
@@ -242,6 +242,22 @@
   }
   100% {
     filter: hue-rotate(360deg);
+  }
+}
+
+/* เพิ่มแอนิเมชันใหม่สำหรับป้ายระยะทาง */
+@keyframes distance-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
   }
 }
 
@@ -302,15 +318,19 @@
   animation: rainbow 3s linear infinite;
 }
 
+.animate-distance {
+  animation: distance-pulse 2s infinite;
+}
+
 /* คลาสสำหรับวงกลมเรืองแสงรอบเครื่องบิน */
 .pulse-circle {
-  width: 50px;
-  height: 50px;
+  width: 60px; /* เพิ่มขนาดจาก 50px เป็น 60px */
+  height: 60px; /* เพิ่มขนาดจาก 50px เป็น 60px */
   border-radius: 50%;
-  background-color: rgba(255, 182, 193, 0.3);
+  background-color: rgba(255, 120, 169, 0.4); /* ปรับจาก rgba(255, 182, 193, 0.3) เป็น rgba(255, 120, 169, 0.4) */
   position: absolute;
-  top: -5px;
-  left: -5px;
+  top: -10px; /* ปรับจาก -5px เป็น -10px */
+  left: -10px; /* ปรับจาก -5px เป็น -10px */
   animation: pulse-ring 2s infinite;
 }
 
@@ -327,8 +347,8 @@
 
 .confetti {
   position: absolute;
-  width: 10px;
-  height: 18px;
+  width: 12px; /* เพิ่มขนาดจาก 10px เป็น 12px */
+  height: 20px; /* เพิ่มขนาดจาก 18px เป็น 20px */
   background-color: var(--accent-color);
   animation: confetti-fall 4s linear forwards, confetti-sway 2.5s ease-in-out infinite;
   z-index: 3000;

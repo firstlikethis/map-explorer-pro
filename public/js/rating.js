@@ -79,15 +79,15 @@ function addConfettiEffect() {
   }
 }
 
-// ฟังก์ชันสร้างสีสุ่ม - โทนพาสเทล
+// ฟังก์ชันสร้างสีสุ่ม - โทนพาสเทลสดใส
 function getRandomColor() {
   const colors = [
-    '#ffb6c1', // Pink
-    '#a5dee5', // Light Blue
-    '#fdfd96', // Light Yellow
-    '#b5ead7', // Mint Green
-    '#e0c3fc', // Lavender
-    '#ffdab9', // Peach
+    '#FF78A9', // Pink - สดขึ้นจากเดิม #ffb6c1
+    '#75C6E0', // Light Blue - สดขึ้นจากเดิม #a5dee5
+    '#FFDA4A', // Light Yellow - สดขึ้นจากเดิม #fdfd96
+    '#80E8B6', // Mint Green - สดขึ้นจากเดิม #b5ead7
+    '#C278FF', // Lavender - สดขึ้นจากเดิม #e0c3fc
+    '#FFB26B', // Peach - สดขึ้นจากเดิม #ffdab9
     '#c9c3f7', // Light Purple
     '#ff9aa2', // Light Red
     '#ffdfba'  // Light Orange
@@ -259,19 +259,19 @@ function startCountingScore() {
       // อัพเดตข้อความตามระดับคะแนน
       if (finalScore >= 85) {
         message.textContent = '🌟 สถานที่นี้น่าทึ่งมาก! คะแนนสูงสุดยอด';
-        message.style.color = '#b5ead7'; // Mint
+        message.style.color = '#80E8B6'; // สีเขียวมินต์สดขึ้น
       } else if (finalScore >= 70) {
         message.textContent = '✨ สถานที่นี้น่าไปเยี่ยมชมสุดๆ';
-        message.style.color = '#a5dee5'; // Light Blue
+        message.style.color = '#75C6E0'; // สีฟ้าสดขึ้น
       } else if (finalScore >= 55) {
         message.textContent = '🌈 สถานที่นี้น่าสนใจมาก';
-        message.style.color = '#e0c3fc'; // Lavender
+        message.style.color = '#C278FF'; // สีม่วงสดขึ้น
       } else if (finalScore >= 40) {
         message.textContent = '👍 สถานที่นี้น่าพอใจ';
-        message.style.color = '#ffdab9'; // Peach
+        message.style.color = '#FFB26B'; // สีส้มพีชสดขึ้น
       } else {
         message.textContent = '🌱 สถานที่นี้มีความเรียบง่าย';
-        message.style.color = '#ffb6c1'; // Pink
+        message.style.color = '#FF78A9'; // สีชมพูสดขึ้น
       }
       
       // จบการนับคะแนน
@@ -432,28 +432,28 @@ function updateLeaderboardUI(places) {
   });
 }
 
-// แสดงการแจ้งเตือน
+// แสดงการแจ้งเตือน - ใช้สีพาสเทลสดใสมากขึ้น
 function showNotification(message, type = 'success', animate = false) {
   const notification = document.getElementById('notification');
   const notificationMessage = document.getElementById('notification-message');
   
-  // กำหนดสีตามประเภทการแจ้งเตือน แบบพาสเทล
+  // กำหนดสีตามประเภทการแจ้งเตือน แบบพาสเทลสดใส
   switch(type) {
     case 'error':
-      notification.style.background = '#ffb6c1'; // Pink
+      notification.style.background = '#FF78A9'; // Pink สดขึ้น
       notification.style.color = '#a24857';
       break;
     case 'warning':
-      notification.style.background = '#fdfd96'; // Light Yellow
+      notification.style.background = '#FFDA4A'; // Light Yellow สดขึ้น
       notification.style.color = '#8c7800';
       break;
     case 'info':
-      notification.style.background = '#a5dee5'; // Light Blue
+      notification.style.background = '#75C6E0'; // Light Blue สดขึ้น
       notification.style.color = '#336b72';
       break;
     case 'success':
     default:
-      notification.style.background = '#b5ead7'; // Mint Green
+      notification.style.background = '#80E8B6'; // Mint Green สดขึ้น
       notification.style.color = '#2d7a5d';
       break;
   }

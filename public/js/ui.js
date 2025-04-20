@@ -63,6 +63,12 @@ function addLoadingAnimations() {
       element.classList.add('animate-fade-in');
     }, index * 200);
   });
+  
+  // เพิ่มเอฟเฟกต์สำหรับ leaderboard ที่โหลดเริ่มต้น
+  const leaderboard = document.querySelector('.leaderboard');
+  if (leaderboard) {
+    leaderboard.classList.add('animate-fade-in');
+  }
 }
 
 // สร้างเอฟเฟกต์เคลื่อนไหวสำหรับโลโก้
@@ -96,12 +102,13 @@ function addRippleEffect() {
   
   buttons.forEach(button => {
     button.addEventListener('click', function(e) {
-      const x = e.clientX - e.target.getBoundingClientRect().left;
-      const y = e.clientY - e.target.getBoundingClientRect().top;
+      const rect = button.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
       
       const ripple = document.createElement('span');
       ripple.style.position = 'absolute';
-      ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
+      ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'; // ปรับความทึบเพิ่มขึ้น
       ripple.style.borderRadius = '50%';
       ripple.style.width = '100px';
       ripple.style.height = '100px';
@@ -121,18 +128,18 @@ function addRippleEffect() {
     });
   });
   
-  // เพิ่ม keyframe สำหรับ ripple effect
+  // เพิ่ม keyframe สำหรับ ripple effect ที่มีขนาดใหญ่ขึ้น
   const style = document.createElement('style');
   style.innerHTML = `
     @keyframes ripple {
       0% {
         width: 0px;
         height: 0px;
-        opacity: 0.5;
+        opacity: 0.6;
       }
       100% {
-        width: 400px;
-        height: 400px;
+        width: 500px;
+        height: 500px;
         opacity: 0;
       }
     }
@@ -153,11 +160,20 @@ function makeDraggable() {
     offsetX = e.clientX - controls.getBoundingClientRect().left;
     offsetY = e.clientY - controls.getBoundingClientRect().top;
     controls.style.cursor = 'grabbing';
+    
+    // เพิ่มเอฟเฟกต์เวลากำลังลาก
+    controls.style.boxShadow = '0 15px 40px rgba(244, 143, 177, 0.25)';
+    controls.style.transform = 'scale(1.02)';
   });
   
   document.addEventListener('mouseup', () => {
-    isDragging = false;
-    controls.style.cursor = 'default';
+    if (isDragging) {
+      // คืนค่าเมื่อปล่อยเมาส์
+      controls.style.cursor = 'default';
+      controls.style.boxShadow = '';
+      controls.style.transform = '';
+      isDragging = false;
+    }
   });
   
   document.addEventListener('mousemove', (e) => {
@@ -169,6 +185,7 @@ function makeDraggable() {
   });
 }
 
+// ฟังก์ชันอัพเดต Leaderboard พร้อมเอฟเฟกต์เสียง
 function updateLeaderboard() {
   // เล่นเสียงเมื่อโหลด Leaderboard
   try {
@@ -181,7 +198,89 @@ function updateLeaderboard() {
     console.error('Error playing leaderboard sound:', err);
   }
   
+  // แสดงเอฟเฟกต์การรีเฟรช
+  const leaderboardContent = document.querySelector('.leaderboard-content');
+  if (leaderboardContent) {
+    leaderboardContent.style.opacity = '0.5';
+    leaderboardContent.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      leaderboardContent.style.opacity = '1';
+      leaderboardContent.style.transform = 'scale(1)';
+    }, 300);
+  }
+  
+  // โหลดข้อมูล Leaderboard
   loadLeaderboard();
+  
+  // แสดงการแจ้งเตือน
+  showNotification('รีเฟรชอันดับล่าสุดแล้ว ✨', 'info');
+}
+
+// ฟังก์ชันแสดงการแจ้งเตือน
+function showNotification(message, type = 'success', animate = false) {
+  const notification = document.getElementById('notification');
+  const notificationMessage = document.getElementById('notification-message');
+  
+  // กำหนดสีตามประเภทการแจ้งเตือน แบบพาสเทลสดใส
+  switch(type) {
+    case 'error':
+      notification.style.background = '#FF78A9'; // Pink สดขึ้น
+      notification.style.color = '#a24857';
+      break;
+    case 'warning':
+      notification.style.background = '#FFDA4A'; // Light Yellow สดขึ้น
+      notification.style.color = '#8c7800';
+      break;
+    case 'info':
+      notification.style.background = '#75C6E0'; // Light Blue สดขึ้น
+      notification.style.color = '#336b72';
+      break;
+    case 'success':
+    default:
+      notification.style.background = '#80E8B6'; // Mint Green สดขึ้น
+      notification.style.color = '#2d7a5d';
+      break;
+  }
+  
+  // กำหนดข้อความ
+  notificationMessage.textContent = message;
+  
+  // ถ้ากำหนดให้มีแอนิเมชัน
+  if (animate) {
+    notificationMessage.classList.add('animate-bounce');
+    setTimeout(() => {
+      notificationMessage.classList.remove('animate-bounce');
+    }, 1000);
+  }
+  
+  // แสดงการแจ้งเตือน
+  notification.classList.add('active');
+  
+  // ซ่อนการแจ้งเตือนหลังจาก 3 วินาที
+  setTimeout(() => {
+    notification.classList.remove('active');
+  }, 3000);
+}
+
+// ปรับความสูงของ Leaderboard ให้แสดงรายการทั้งหมดโดยไม่มี scrollbar
+function adjustLeaderboardHeight() {
+  const leaderboardContent = document.querySelector('.leaderboard-content');
+  const topPlaces = document.getElementById('top-places');
+  
+  if (leaderboardContent && topPlaces) {
+    // คำนวณความสูงที่เหมาะสมตามจำนวนรายการ
+    const itemCount = topPlaces.children.length;
+    if (itemCount === 0) {
+      // ถ้าไม่มีรายการ
+      leaderboardContent.style.padding = '20px';
+      leaderboardContent.style.height = 'auto';
+    } else {
+      // ถ้ามีรายการ ปรับความสูงให้พอดี (ประมาณ 70px ต่อรายการ + พื้นที่ว่าง)
+      leaderboardContent.style.height = 'auto';
+      // ลบ scrollbar
+      leaderboardContent.style.overflowY = 'visible';
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -215,4 +314,14 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // ทำให้กล่องควบคุมสามารถเลื่อนได้
   makeDraggable();
+  
+  // ปรับ Leaderboard ให้แสดงรายการทั้งหมดโดยไม่มี scrollbar
+  adjustLeaderboardHeight();
+  
+  // ตั้งค่า MutationObserver สำหรับการปรับความสูงของ Leaderboard เมื่อมีการเปลี่ยนแปลง
+  const observer = new MutationObserver(adjustLeaderboardHeight);
+  const topPlaces = document.getElementById('top-places');
+  if (topPlaces) {
+    observer.observe(topPlaces, { childList: true, subtree: true });
+  }
 });

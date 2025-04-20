@@ -156,6 +156,96 @@
     </audio>
   </div>
 
+  <!-- Custom Styles for Distance Labels -->
+  <style>
+    /* สไตล์สำหรับป้ายแสดงระยะทางรวม */
+    .distance-label {
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 2px solid #FFDA4A;
+      border-radius: 15px;
+      padding: 5px 10px;
+      font-family: 'Mali', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      color: #7c6c77;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      animation: distance-pulse 2s infinite;
+    }
+    
+    /* สไตล์สำหรับป้ายแสดงระยะทางที่เหลือ */
+    .remaining-distance {
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 2px solid #80E8B6;
+      border-radius: 15px;
+      padding: 5px 10px;
+      font-family: 'Mali', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      color: #7c6c77;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .remaining-distance-icon {
+      margin-right: 5px;
+      font-size: 16px;
+    }
+    
+    /* แอนิเมชั่นสำหรับป้ายระยะทาง */
+    @keyframes distance-pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+      50% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+    }
+    
+    /* ปรับแต่ง popup ของ leaflet */
+    .leaflet-popup-content-wrapper {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      border: 3px solid #FF78A9;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .leaflet-popup-tip {
+      background: #FF78A9;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .leaflet-popup-content {
+      margin: 13px 19px;
+      line-height: 1.4;
+      font-family: 'Mali', sans-serif;
+      font-size: 14px;
+      color: #7c6c77;
+    }
+    
+    .custom-popup {
+      display: flex;
+      align-items: center;
+      padding: 5px;
+    }
+    
+    .custom-popup-icon {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+    
+    .custom-popup-text {
+      font-weight: 600;
+    }
+  </style>
+
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <!-- ตัวแปรสำหรับแชร์ระหว่างไฟล์ JS -->
