@@ -8,6 +8,8 @@ let isSoundEnabled = true;
 let isMusicPlaying = false;
 let musicVolume = 0.4; // 40%
 let effectsVolume = 0.6; // 60%
+let userHasInteracted = false; // เพิ่มตัวแปรเพื่อตรวจสอบว่าผู้ใช้มีการโต้ตอบกับเว็บไซต์แล้วหรือไม่
+let soundQueue = []; // คิวสำหรับเสียงที่ต้องการเล่นก่อนที่ผู้ใช้จะมีการโต้ตอบ
 
 // ตัวแปรอ้างอิงไฟล์เสียงต่างๆ
 let backgroundMusic;
@@ -111,17 +113,26 @@ function initSoundSystem() {
         !toggleSoundBtn.contains(e.target)) {
       volumePanel.classList.remove('active');
     }
+    
+    // เมื่อผู้ใช้คลิกที่ใดก็ตามบนเว็บไซต์ ให้กำหนด userHasInteracted เป็น true
+    if (!userHasInteracted) {
+      userHasInteracted = true;
+      console.log('User has interacted with the page, sound system fully activated');
+      
+      // เล่นเสียงที่อยู่ในคิว
+      while (soundQueue.length > 0) {
+        const { soundName, isTest } = soundQueue.shift();
+        playSound(soundName, isTest);
+      }
+      
+      // เริ่มเล่นเพลงพื้นหลังหลังจากผู้ใช้มีการโต้ตอบ
+      if (isSoundEnabled) {
+        playBackgroundMusic();
+      }
+    }
   });
   
-  // เริ่มเล่นเพลงพื้นหลังอัตโนมัติ
-  playBackgroundMusic();
-  
   console.log('Sound system initialized successfully');
-
-  // ทดสอบเล่นเสียง (เพื่อการตรวจสอบ)
-  setTimeout(() => {
-    testSoundEffects();
-  }, 2000);
 }
 
 // ฟังก์ชันทดสอบเสียงเอฟเฟกต์ (สำหรับตรวจสอบเท่านั้น)
@@ -211,6 +222,12 @@ function playBackgroundMusic() {
   if (!isMusicPlaying) {
     backgroundMusic.volume = musicVolume;
     
+    // หากผู้ใช้ยังไม่มีการโต้ตอบกับเว็บไซต์ ให้ข้ามการเล่นเพลง
+    if (!userHasInteracted) {
+      console.log('Cannot play background music yet, waiting for user interaction');
+      return;
+    }
+    
     // ใช้ Promise เพื่อจัดการกับปัญหา autoplay policy
     const playPromise = backgroundMusic.play();
     
@@ -251,6 +268,13 @@ function pauseBackgroundMusic() {
 function playSound(soundName, isTest = false) {
   if (!isSoundEnabled && !isTest) return;
   
+  // หากผู้ใช้ยังไม่มีการโต้ตอบกับเว็บไซต์และไม่ใช่การทดสอบ ให้เพิ่มเสียงเข้าคิว
+  if (!userHasInteracted && !isTest) {
+    console.log(`Queueing sound "${soundName}" until user interacts with page`);
+    soundQueue.push({ soundName, isTest });
+    return;
+  }
+  
   // ตรวจสอบว่ามีเสียงนี้หรือไม่
   if (soundEffects[soundName]) {
     const sound = soundEffects[soundName];
@@ -262,15 +286,34 @@ function playSound(soundName, isTest = false) {
     try {
       sound.volume = effectsVolume;
       
-      // หยุดเสียงที่กำลังเล่นอยู่ (ถ้ามี) แล้วเล่นใหม่
-      sound.pause();
-      sound.currentTime = 0;
-      
-      const playPromise = sound.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(err => {
-          console.error(`Error playing sound "${soundName}":`, err);
-        });
+      // ตรวจสอบสถานะการเล่นเสียงปัจจุบัน
+      if (!sound.paused) {
+        // ถ้ากำลังเล่นอยู่ ให้สร้างเสียงใหม่เพื่อเล่นซ้อนกัน
+        const newSound = sound.cloneNode(true);
+        newSound.volume = effectsVolume;
+        
+        const playPromise = newSound.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.error(`Error playing cloned sound "${soundName}":`, err);
+            
+            // หากเกิดข้อผิดพลาด ให้ลองใช้วิธีเดิม
+            sound.currentTime = 0;
+            sound.play().catch(innerErr => {
+              console.error(`Error playing original sound "${soundName}" after clone failed:`, innerErr);
+            });
+          });
+        }
+      } else {
+        // หยุดเสียงที่กำลังเล่นอยู่ (ถ้ามี) แล้วเล่นใหม่
+        sound.currentTime = 0;
+        
+        const playPromise = sound.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.error(`Error playing sound "${soundName}":`, err);
+          });
+        }
       }
       
       if (isTest) {
@@ -301,20 +344,20 @@ function showNotification(message, type = 'success', animate = false) {
   // กำหนดสีตามประเภทการแจ้งเตือน
   switch(type) {
     case 'error':
-      notification.style.background = '#ffb6c1'; // Pink
+      notification.style.background = '#FF78A9'; // Pink
       notification.style.color = '#a24857';
       break;
     case 'warning':
-      notification.style.background = '#fdfd96'; // Light Yellow
+      notification.style.background = '#FFDA4A'; // Light Yellow
       notification.style.color = '#8c7800';
       break;
     case 'info':
-      notification.style.background = '#a5dee5'; // Light Blue
+      notification.style.background = '#75C6E0'; // Light Blue
       notification.style.color = '#336b72';
       break;
     case 'success':
     default:
-      notification.style.background = '#b5ead7'; // Mint Green
+      notification.style.background = '#80E8B6'; // Mint Green
       notification.style.color = '#2d7a5d';
       break;
   }
@@ -353,3 +396,20 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM loaded in sound.js, initializing sound system...');
   setTimeout(initSoundSystem, 500); // รอให้ DOM โหลดเสร็จสมบูรณ์ก่อน
 });
+
+// เพิ่ม event listener สำหรับการโต้ตอบของผู้ใช้ครั้งแรก
+document.addEventListener('click', function enableAudioOnFirstClick() {
+  userHasInteracted = true;
+  document.removeEventListener('click', enableAudioOnFirstClick);
+  
+  // เล่นเสียงที่อยู่ในคิว
+  while (soundQueue.length > 0) {
+    const { soundName, isTest } = soundQueue.shift();
+    playSound(soundName, isTest);
+  }
+  
+  // เริ่มเล่นเพลงพื้นหลังหลังจากผู้ใช้มีการโต้ตอบ
+  if (isSoundEnabled) {
+    playBackgroundMusic();
+  }
+}, { once: true });
