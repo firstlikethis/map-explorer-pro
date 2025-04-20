@@ -27,12 +27,20 @@
         </svg>
         <h1>Map Explorer <span>PRO</span></h1>
       </div>
-      <button id="toggle-leaderboard" class="toggle-btn">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 7H20.5L15 1.5V7M8 0H16L22 6V18C22 19.1 21.1 20 20 20H8C6.89 20 6 19.1 6 18V2C6 0.89 6.89 0 8 0M10 4C8.9 4 8 4.9 8 6C8 7.1 8.9 8 10 8C11.1 8 12 7.1 12 6C12 4.9 11.1 4 10 4M4 4C2.9 4 2 4.9 2 6V20C2 21.1 2.9 22 4 22H18V20H4V4Z"/>
-        </svg>
-        <span>รีเฟรชอันดับ</span>
-      </button>
+      <div class="control-buttons">
+        <button id="toggle-sound" class="toggle-btn sound-btn">
+          <svg id="sound-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+          </svg>
+          <span>เปิดเสียง</span>
+        </button>
+        <button id="toggle-leaderboard" class="toggle-btn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 7H20.5L15 1.5V7M8 0H16L22 6V18C22 19.1 21.1 20 20 20H8C6.89 20 6 19.1 6 18V2C6 0.89 6.89 0 8 0M10 4C8.9 4 8 4.9 8 6C8 7.1 8.9 8 10 8C11.1 8 12 7.1 12 6C12 4.9 11.1 4 10 4M4 4C2.9 4 2 4.9 2 6V20C2 21.1 2.9 22 4 22H18V20H4V4Z"/>
+          </svg>
+          <span>รีเฟรชอันดับ</span>
+        </button>
+      </div>
     </div>
     
     <div class="search-container">
@@ -104,6 +112,49 @@
       <span id="notification-message">บันทึกคะแนนเรียบร้อยแล้ว!</span>
     </div>
   </div>
+  
+  <!-- Volume Control Panel -->
+  <div id="volume-control" class="volume-container">
+    <h3 style="margin: 0 0 10px; font-size: 16px;">🎵 ระดับความดัง</h3>
+    <div style="width: 100%;">
+      <div style="display: flex; align-items: center; margin-bottom: 5px;">
+        <span style="font-size: 12px; margin-right: 10px;">🎶 เพลง</span>
+        <input type="range" id="music-volume" class="volume-slider" min="0" max="100" value="40">
+      </div>
+      <div style="display: flex; align-items: center;">
+        <span style="font-size: 12px; margin-right: 10px;">🔊 เอฟเฟกต์</span>
+        <input type="range" id="effects-volume" class="volume-slider" min="0" max="100" value="60">
+      </div>
+    </div>
+  </div>
+
+  <!-- ระบบเสียง -->
+  <div id="audio-system" style="display: none;">
+    <!-- เพลงพื้นหลัง (เล่นแบบ loop) -->
+    <audio id="background-music" loop>
+      <source src="assets/music/music.mp3" type="audio/mp3">
+    </audio>
+    
+    <!-- เสียงต่างๆ -->
+    <audio id="sound-celebration" preload="auto">
+      <source src="assets/sounds/celebration.mp3" type="audio/mp3">
+    </audio>
+    <audio id="sound-chime" preload="auto">
+      <source src="assets/sounds/chime.mp3" type="audio/mp3">
+    </audio>
+    <audio id="sound-high-rating" preload="auto">
+      <source src="assets/sounds/high-rating.mp3" type="audio/mp3">
+    </audio>
+    <audio id="sound-rating" preload="auto">
+      <source src="assets/sounds/rating.mp3" type="audio/mp3">
+    </audio>
+    <audio id="sound-request" preload="auto">
+      <source src="assets/sounds/request.mp3" type="audio/mp3">
+    </audio>
+    <audio id="sound-transition" preload="auto">
+      <source src="assets/sounds/transition.mp3" type="audio/mp3">
+    </audio>
+  </div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -113,6 +164,7 @@
     let map;
   </script>
   <!-- Custom JS -->
+  <script src="js/sound.js"></script>
   <script src="js/map.js"></script>
   <script src="js/rating.js"></script>
   <script src="js/ui.js"></script>

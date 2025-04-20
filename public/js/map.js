@@ -137,15 +137,42 @@ async function navigateToDestination() {
   
   if (!destinationInput) {
     showNotification('กรุณากรอกชื่อสถานที่ปลายทาง 🌍', 'error');
+    // เล่นเสียงแจ้งเตือนเมื่อมีข้อผิดพลาด
+    try {
+      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+        window.SoundSystem.play('chime');
+      } else {
+        console.warn('SoundSystem not available or play method not found');
+      }
+    } catch (err) {
+      console.error('Error playing sound:', err);
+    }
     return;
   }
   
   if (animationInProgress) {
     showNotification('กำลังบินอยู่! รอให้เครื่องบินถึงที่หมายก่อนนะ ✈️', 'info', true);
+    // เล่นเสียงแจ้งเตือนเมื่อมีข้อผิดพลาด
+    try {
+      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+        window.SoundSystem.play('chime');
+      }
+    } catch (err) {
+      console.error('Error playing sound:', err);
+    }
     return;
   }
   
   try {
+    // เล่นเสียงตอนกดปุ่มนำทาง
+    try {
+      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+        window.SoundSystem.play('request');
+      }
+    } catch (err) {
+      console.error('Error playing sound:', err);
+    }
+    
     // เปลี่ยนข้อความปุ่มเป็นกำลังโหลด
     const navigateBtn = document.getElementById('navigate');
     navigateBtn.innerHTML = '<div class="animate-spin" style="border:2px solid #fff;border-top-color:transparent;border-radius:50%;width:20px;height:20px;margin:0 auto;"></div>';
@@ -206,6 +233,15 @@ async function navigateToDestination() {
       // รีเซ็ตตัวแปรควบคุมกล้อง
       cameraFollow = true;
       zoomOutTriggered = false;
+      
+      // เล่นเสียงเริ่มต้นการเดินทาง
+      try {
+        if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+          window.SoundSystem.play('transition');
+        }
+      } catch (err) {
+        console.error('Error playing sound:', err);
+      }
       
       // เริ่มต้นการเคลื่อนที่ของเครื่องบิน
       showNotification(`กำลังเดินทางไปยัง ${destinationInput} ✈️`, 'info');
@@ -346,6 +382,15 @@ function animateAirplane(start, end) {
       requestAnimationFrame(moveStep);
     } else {
       // เมื่อการเคลื่อนที่เสร็จสิ้น
+      
+      // เล่นเสียงเมื่อถึงจุดหมาย
+      try {
+        if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+          window.SoundSystem.play('celebration');
+        }
+      } catch (err) {
+        console.error('Error playing sound:', err);
+      }
       
       // เพิ่มเอฟเฟกต์เมื่อถึงจุดหมาย
       // สร้างเอฟเฟกต์แสงระเบิดเมื่อถึงจุดหมาย

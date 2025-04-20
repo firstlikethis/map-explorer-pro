@@ -99,6 +99,17 @@ function getRandomColor() {
 function openRatingModal(placeName, lat, lng) {
   console.log('Rating modal opened for:', placeName, lat, lng);
   
+  // เล่นเสียงเปิดกล่องให้คะแนน
+  try {
+    if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+      window.SoundSystem.play('rating');
+    } else {
+      console.warn('SoundSystem not available or play method not found');
+    }
+  } catch (err) {
+    console.error('Error playing rating sound:', err);
+  }
+  
   // บันทึกข้อมูลสถานที่ที่จะให้คะแนน
   currentRatingPlace = placeName;
   currentRatingLat = lat;
@@ -170,49 +181,21 @@ function startCountingScore() {
   
   message.textContent = 'กำลังประเมินคะแนนของสถานที่...';
   
-  // สร้างเสียงนับเลข (ใช้ Web Audio API)
-  let audioContext;
-  try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  } catch(e) {
-    console.warn('Web Audio API not supported:', e);
-  }
-  
-  // ฟังก์ชันสร้างเสียงบี๊บเมื่อนับเลข
-  function createBeepSound(frequency, duration) {
-    if (!audioContext) return;
-    
-    try {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.value = frequency;
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      gainNode.gain.value = 0.05; // ลดความดังลงมากกว่าเดิม
-      oscillator.start();
-      
-      setTimeout(() => {
-        oscillator.stop();
-      }, duration);
-    } catch(e) {
-      console.warn('Error creating beep sound:', e);
-    }
-  }
+  // ไม่ต้องใช้ Web Audio API อีกต่อไป เนื่องจากเรามีระบบเสียงใหม่แล้ว
   
   // ใช้ setInterval เพื่อนับคะแนนขึ้นเรื่อยๆ
   countInterval = setInterval(() => {
     score += step;
     console.log('Current score:', score);
     
-    // เล่นเสียงเมื่อนับเลข (ความถี่แตกต่างกันตามคะแนน)
-    if (score % 5 === 0 && audioContext) {
+    // เล่นเสียงเมื่อนับเลขทุกๆ 5 คะแนน
+    if (score % 5 === 0) {
       try {
-        createBeepSound(300 + score * 2, 20);
-      } catch(e) {
-        console.warn('Error playing sound:', e);
+        if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+          window.SoundSystem.play('chime');
+        }
+      } catch (err) {
+        console.error('Error playing counting sound:', err);
       }
     }
     
@@ -234,28 +217,43 @@ function startCountingScore() {
       clearInterval(countInterval);
       console.log('Final score reached:', finalScore);
       
-      // เพิ่มเสียงเมื่อนับเสร็จ
-      if (audioContext) {
+      // เพิ่มเสียงเมื่อนับเสร็จตามระดับคะแนน
+      if (finalScore >= 80) {
+        // เสียงคะแนนสูงถูกเล่นในส่วนถัดไป
+      } else if (finalScore >= 40) {
         try {
-          if (finalScore >= 80) {
-            createBeepSound(800, 300);
-            setTimeout(() => createBeepSound(1000, 500), 300);
-          } else if (finalScore >= 40) {
-            createBeepSound(600, 300);
-          } else {
-            createBeepSound(300, 300);
+          if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+            window.SoundSystem.play('chime');
           }
-        } catch(e) {
-          console.warn('Error playing final sound:', e);
+        } catch (err) {
+          console.error('Error playing final chime sound:', err);
+        }
+      } else {
+        try {
+          if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+            window.SoundSystem.play('chime');
+          }
+        } catch (err) {
+          console.error('Error playing final chime sound:', err);
         }
       }
       
       // เพิ่ม effect เมื่อนับเสร็จ
       scoreCounter.classList.add('animate-bounce');
       
-      // เพิ่มพลุสำหรับคะแนนสูง
+      // เพิ่มพลุและเล่นเสียงสำหรับคะแนนสูง
       if (finalScore >= 80) {
         addConfettiEffect();
+        // เล่นเสียงพิเศษสำหรับคะแนนสูง
+        try {
+          if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+            window.SoundSystem.play('highRating');
+          } else {
+            console.warn('SoundSystem not available or play method not found');
+          }
+        } catch (err) {
+          console.error('Error playing high rating sound:', err);
+        }
       }
       
       // อัพเดตข้อความตามระดับคะแนน
