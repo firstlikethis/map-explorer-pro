@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map Explorer PRO</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- แผนที่หลัก -->
+  <div id="map"></div>
+  
+  <!-- แผงควบคุม -->
+  <div class="controls">
+    <div class="controls-header">
+      <div class="logo">
+        <svg class="globe-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM4 12C4 11.39 4.08 10.79 4.21 10.22L8 13.91V15C8 16.1 8.9 17 10 17H14V19.19C13.35 19.39 12.68 19.5 12 19.5C7.59 19.5 4 16.09 4 12ZM19.31 15.68C18.87 15.25 18.22 15 17.5 15H17V13C17 12.45 16.55 12 16 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.78 20 8.65 20 12C20 13.32 19.75 14.57 19.31 15.68Z"/>
+        </svg>
+        <h1>Map Explorer <span>PRO</span></h1>
+      </div>
+      <button id="toggle-leaderboard" class="toggle-btn">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 7H20.5L15 1.5V7M8 0H16L22 6V18C22 19.1 21.1 20 20 20H8C6.89 20 6 19.1 6 18V2C6 0.89 6.89 0 8 0M10 4C8.9 4 8 4.9 8 6C8 7.1 8.9 8 10 8C11.1 8 12 7.1 12 6C12 4.9 11.1 4 10 4M4 4C2.9 4 2 4.9 2 6V20C2 21.1 2.9 22 4 22H18V20H4V4Z"/>
+        </svg>
+        <span>Leaderboard</span>
+      </button>
+    </div>
+    
+    <div class="search-container">
+      <input type="text" id="destination" placeholder="ป้อนชื่อเมืองปลายทาง..." />
+      <button id="navigate" class="primary-btn">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.9,17.4L2.5,19L1,17.5L9.2,9.3L13.6,13.6L17.4,9.8C18.2,9 19.5,9 20.3,9.8C21.1,10.6 21.1,11.9 20.3,12.7L16.4,16.6L13,13.1L3.9,17.4Z"/>
+        </svg>
+        <span>ไปยังจุดหมาย</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- กล่อง Leaderboard -->
+  <div class="leaderboard-container">
+    <div class="leaderboard">
+      <div class="leaderboard-header">
+        <h2>
+          <svg class="star-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/>
+          </svg>
+          Top 5 สถานที่คะแนนสูงสุด
+        </h2>
+        <button id="close-leaderboard" class="close-btn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="leaderboard-content">
+        <ul id="top-places">
+          <!-- สถานที่จะถูกเพิ่มด้วย JavaScript -->
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- กล่องให้คะแนน -->
+  <div id="rating-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ให้คะแนนสถานที่</h2>
+        <button id="close-rating" class="close-btn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="rating-place-info">
+          <h3 id="rating-place-name">กรุงเทพมหานคร</h3>
+          <div class="score-animation-container">
+            <div class="score-counter" id="score-counter">0</div>
+            <div class="score-label">คะแนน</div>
+          </div>
+        </div>
+        <div class="rating-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+        <p class="rating-message">กำลังสุ่มคะแนนให้กับสถานที่นี้...</p>
+      </div>
+      <div class="modal-footer">
+        <button id="save-rating" class="primary-btn" disabled>บันทึกคะแนน</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Notification Toast -->
+  <div id="notification" class="notification">
+    <div class="notification-content">
+      <svg class="notification-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+      </svg>
+      <span id="notification-message">บันทึกคะแนนเรียบร้อยแล้ว!</span>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <!-- ตัวแปรสำหรับแชร์ระหว่างไฟล์ JS -->
+  <script>
+    // ตัวแปรแชร์สำหรับแผนที่ (จะได้เข้าถึงจาก rating.js ได้)
+    let map;
+  </script>
+  <!-- Custom JS -->
+  <script src="js/map.js"></script>
+  <script src="js/rating.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

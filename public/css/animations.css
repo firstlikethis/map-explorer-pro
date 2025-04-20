@@ -1,0 +1,254 @@
+/* animations.css - CSS สำหรับแอนิเมชั่นต่างๆ ใน Map Explorer PRO */
+
+/* แอนิเมชั่นสำหรับเครื่องบิน */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  80%, 100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* แอนิเมชั่นสำหรับเอฟเฟกต์เมื่อถึงที่หมาย */
+@keyframes expand {
+  0% {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* แอนิเมชั่นสำหรับตัวเลขคะแนน */
+@keyframes countUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* แอนิเมชั่นสำหรับเมื่อได้คะแนนสูง */
+@keyframes celebrate {
+  0% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.1);
+  }
+  20% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.05);
+  }
+  40% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* แอนิเมชั่นสำหรับการแสดงผลแบบ fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* แอนิเมชั่นสำหรับการแสดงผลแบบ slide in */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* แอนิเมชั่นสำหรับ loading */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* แอนิเมชั่นสำหรับปุ่ม */
+@keyframes pulse-button {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+  }
+}
+
+/* แอนิเมชันสำหรับพลุและดาวระยิบ */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100vh + 100px)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes confetti-sway {
+  0% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+/* คลาสที่ใช้ animator ต่างๆ */
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s;
+}
+
+.animate-celebrate {
+  animation: celebrate 1s;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.5s forwards;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse-button {
+  animation: pulse-button 1.5s infinite;
+}
+
+/* คลาสสำหรับวงกลมเรืองแสงรอบเครื่องบิน */
+.pulse-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(52, 152, 219, 0.2);
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  animation: pulse-ring 2s infinite;
+}
+
+/* สไตล์สำหรับพลุและดาวระยิบ */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3000;
+}
+
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 16px;
+  background-color: #f1c40f;
+  animation: confetti-fall 3s linear forwards, confetti-sway 2s ease-in-out infinite;
+  z-index: 3000;
+}
+
+.star {
+  position: absolute;
+  animation: star-twinkle 1.5s ease-in-out infinite;
+  z-index: 3000;
+}
