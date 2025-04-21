@@ -1,11 +1,10 @@
 /**
- * map.js - จัดการแผนที่และการเคลื่อนที่ของเครื่องบิน
- * Map Explorer PRO - Pastel Cute Theme
+ * map.js - Manages map and airplane movement
+ * Map Explorer PRO - TikTok Live Edition
  */
 
-// ตัวแปรแผนที่และองค์ประกอบต่างๆ
-// ไม่ต้องประกาศ map ที่นี่เพราะประกาศใน index.html แล้ว
-// let map;
+// Map variables and components
+// The 'map' variable is declared in index.html
 let currentMarker;
 let destinationMarker;
 let pastRouteLine;
@@ -18,72 +17,207 @@ let animationInProgress = false;
 let currentPosition = { lat: 48.8566, lng: 2.3522 }; // Paris coordinates
 let currentDestination = '';
 
-// ตัวแปรควบคุมการเคลื่อนที่ของกล้อง
+// Camera control variables
 let cameraFollow = true;
 let zoomOutTriggered = false;
 
-// สีสำหรับธีม Pastel แบบเด่นชัดมากขึ้น
+// Pastel colors palette
 const pastelColors = {
-  primary: '#FF78A9',  // สีชมพูสดขึ้น (เดิม: #ffb6c1)
-  secondary: '#75C6E0',  // สีฟ้าเข้มขึ้น (เดิม: #a5dee5)
-  accent: '#FFDA4A',    // สีเหลืองสดขึ้น (เดิม: #fdfd96)
-  mint: '#80E8B6',     // สีเขียวมินต์สดขึ้น (เดิม: #b5ead7)
-  lavender: '#C278FF',  // สีม่วงสดขึ้น (เดิม: #e0c3fc)
-  peach: '#FFB26B'      // สีส้มพีชสดขึ้น (เดิม: #ffdab9)
+  primary: '#FF78A9',  // Pink
+  secondary: '#75C6E0', // Light Blue
+  accent: '#FFDA4A',    // Light Yellow
+  mint: '#80E8B6',     // Mint Green
+  lavender: '#C278FF',  // Lavender
+  peach: '#FFB26B'      // Peach
 };
 
-// ฟังก์ชันสำหรับเริ่มต้นแผนที่
+// Initialize the map
 function initMap() {
-  // สร้างแผนที่โดยใช้ Leaflet
+  // Create the map using Leaflet
   map = L.map('map', {
-    zoomControl: false // ซ่อนปุ่ม zoom เริ่มต้น
+    zoomControl: false // Hide default zoom controls
   }).setView([currentPosition.lat, currentPosition.lng], 5);
   
   console.log('Map initialized');
   
-  // เพิ่ม zoom control ในตำแหน่งด้านล่างขวา
+  // Add custom positioned zoom control
   L.control.zoom({
     position: 'bottomright'
   }).addTo(map);
   
-  // เพิ่ม tile layer จาก OpenStreetMap
+  // Add OpenStreetMap tile layer
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
   
-  // ปรับแต่ง CSS ของแผนที่ให้เข้ากับธีม Pastel
+  // Customize zoom control CSS
   document.querySelector('.leaflet-control-zoom').style.borderRadius = '20px';
   document.querySelector('.leaflet-control-zoom').style.overflow = 'hidden';
   document.querySelector('.leaflet-control-zoom').style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
   
-  // เพิ่ม marker ของจุดเริ่มต้น
+  // Add marker for starting point
   const initialIcon = createMarkerIcon('primary');
   
   currentMarker = L.marker([currentPosition.lat, currentPosition.lng], {
     icon: initialIcon
   }).addTo(map)
-    .bindPopup(createCustomPopup('🗼 Paris - จุดเริ่มต้น'))
+    .bindPopup(createCustomPopup('🗼 Paris - Starting Point'))
     .openPopup();
   
-  // สร้างไอคอนเครื่องบินแบบ PRO ด้วย SVG แบบน่ารัก
+  // Create airplane icon
   const airplaneIcon = createAirplaneIcon(0);
   
-  // สร้าง marker สำหรับเครื่องบิน (แต่ยังไม่แสดงบนแผนที่)
+  // Create airplane marker (but don't add to map yet)
   airplaneMarker = L.marker([0, 0], { icon: airplaneIcon, zIndexOffset: 1000 });
   
-  // เพิ่ม event listener สำหรับปุ่มนำทาง
-  document.getElementById('navigate').addEventListener('click', navigateToDestination);
+  // Set up location queue callbacks
+  setupQueueIntegration();
   
-  // ปรับระดับซูมเริ่มต้นให้ใกล้มากขึ้น
+  // Adjust initial zoom level
   map.setZoom(6);
   
-  // ปรับแต่ง popup ของ leaflet ให้สวยงามยิ่งขึ้น
+  // Customize Leaflet popups
   customizeLeafletPopup();
 }
 
-// ฟังก์ชันปรับแต่ง popup ของ leaflet
+// Set up queue integration
+function setupQueueIntegration() {
+  console.log('Setting up queue integration');
+  
+  // Set callback for when a new location is selected from the queue
+  window.locationQueue.onLocationSelected((locationData) => {
+    console.log(`Location selected callback triggered for: ${locationData.place}`);
+    
+    if (!animationInProgress) {
+      console.log(`Starting navigation to ${locationData.place}`);
+      // If we're not currently animating, start navigation
+      navigateToQueuedLocation(locationData.place);
+    } else {
+      console.log(`Cannot navigate to ${locationData.place} - animation in progress`);
+    }
+  });
+  
+  // Set callback for when animation is complete
+  window.locationQueue.onAnimationComplete(() => {
+    console.log('Animation complete callback triggered');
+  });
+}
+
+// Navigate to a location from the queue
+async function navigateToQueuedLocation(placeName) {
+  console.log(`Starting navigation to queued location: ${placeName}`);
+  
+  if (animationInProgress) {
+    console.log('Animation already in progress, ignoring request');
+    return;
+  }
+  
+  try {
+    // Play request sound
+    if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+      window.SoundSystem.play('request');
+    }
+    
+    showNotification(`Exploring ${placeName} ✈️`, 'info');
+    
+    // Call geocoding API to get coordinates
+    console.log(`Geocoding location: ${placeName}`);
+    const response = await fetch(`/api/geocode?place=${encodeURIComponent(placeName)}`);
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log(`Geocoding successful for ${placeName}:`, data);
+      // If geocoding is successful
+      const destination = { lat: data.lat, lng: data.lon };
+      // Store destination name
+      currentDestination = placeName;
+      
+      // Remove previous markers and routes
+      if (destinationMarker) map.removeLayer(destinationMarker);
+      if (pastRouteLine) map.removeLayer(pastRouteLine);
+      if (futureRouteLine) map.removeLayer(futureRouteLine);
+      if (airplaneMarker && map.hasLayer(airplaneMarker)) map.removeLayer(airplaneMarker);
+      if (distanceLabel) map.removeLayer(distanceLabel);
+      if (remainingDistanceLabel) map.removeLayer(remainingDistanceLabel);
+      
+      // Add marker for destination
+      const destinationIcon = createMarkerIcon('lavender');
+      
+      destinationMarker = L.marker([destination.lat, destination.lng], {
+        icon: destinationIcon
+      }).addTo(map)
+        .bindPopup(createCustomPopup(`📍 ${placeName}`))
+        .openPopup();
+      
+      // Calculate distance between start and destination
+      totalDistance = calculateDistance(
+        currentPosition.lat, 
+        currentPosition.lng, 
+        destination.lat, 
+        destination.lng
+      );
+      
+      console.log(`Distance to ${placeName}: ${totalDistance.toFixed(2)} km`);
+      
+      // Draw dashed line between start and destination (future route)
+      futureRouteLine = L.polyline([[currentPosition.lat, currentPosition.lng], [destination.lat, destination.lng]], {
+        color: pastelColors.lavender,
+        weight: 5,
+        opacity: 0.8,
+        dashArray: '12, 8'
+      }).addTo(map);
+      
+      // Create past route line (empty initially)
+      pastRouteLine = L.polyline([], {
+        color: pastelColors.peach,
+        weight: 5,
+        opacity: 0.7
+      }).addTo(map);
+      
+      // Add label showing total distance at the middle of the route
+      const middlePoint = L.latLng(
+        (currentPosition.lat + destination.lat) / 2,
+        (currentPosition.lng + destination.lng) / 2
+      );
+      
+      distanceLabel = L.marker(middlePoint, {
+        icon: L.divIcon({
+          html: createDistanceLabel(totalDistance),
+          className: '',
+          iconSize: [200, 30],
+          iconAnchor: [100, 15]
+        }),
+        interactive: false
+      }).addTo(map);
+      
+      // Fit the map to show the entire route
+      map.fitBounds(futureRouteLine.getBounds(), { padding: [70, 70] });
+      
+      // Reset camera control variables
+      cameraFollow = true;
+      zoomOutTriggered = false;
+      
+      // Play transition sound
+      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+        window.SoundSystem.play('transition');
+      }
+      
+      console.log(`Starting airplane animation to ${placeName}`);
+      // Start airplane animation
+      animateAirplane(currentPosition, destination);
+    } else {
+      console.error(`Geocoding failed for ${placeName}:`, data.error);
+      showNotification(data.error || 'Could not find this location 😢', 'error');
+    }
+  } catch (error) {
+    console.error('Error navigating:', error);
+    showNotification('Error navigating to location 😢', 'error');
+  }
+}
+
+// Customize Leaflet popups
 function customizeLeafletPopup() {
-  // เพิ่ม CSS สำหรับ popup
+  // Add CSS for popups
   const styleTag = document.createElement('style');
   styleTag.innerHTML = `
     .leaflet-popup-content-wrapper {
@@ -99,7 +233,7 @@ function customizeLeafletPopup() {
     .leaflet-popup-content {
       margin: 13px 19px;
       line-height: 1.4;
-      font-family: 'Mali', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       font-size: 14px;
       color: #7c6c77;
     }
@@ -120,7 +254,7 @@ function customizeLeafletPopup() {
       border: 2px solid ${pastelColors.accent};
       border-radius: 15px;
       padding: 5px 10px;
-      font-family: 'Mali', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       font-weight: 600;
       font-size: 13px;
       color: #7c6c77;
@@ -131,7 +265,7 @@ function customizeLeafletPopup() {
       border: 2px solid ${pastelColors.mint};
       border-radius: 15px;
       padding: 5px 10px;
-      font-family: 'Mali', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       font-weight: 600;
       font-size: 13px;
       color: #7c6c77;
@@ -148,17 +282,16 @@ function customizeLeafletPopup() {
   document.head.appendChild(styleTag);
 }
 
-// สร้าง custom popup content
+// Create custom popup content
 function createCustomPopup(text) {
-  const content = `
+  return `
     <div class="custom-popup">
       <div class="custom-popup-text">${text}</div>
     </div>
   `;
-  return content;
 }
 
-// ฟังก์ชันสร้างไอคอนเครื่องบิน
+// Create airplane icon
 function createAirplaneIcon(angle) {
   return L.divIcon({
     html: `
@@ -170,14 +303,14 @@ function createAirplaneIcon(angle) {
       </div>
     `,
     className: '',
-    iconSize: [50, 50],  // เพิ่มขนาดจาก 45 เป็น 50
-    iconAnchor: [25, 25]  // ปรับ anchor ตาม iconSize
+    iconSize: [50, 50],
+    iconAnchor: [25, 25]
   });
 }
 
-// ฟังก์ชันสร้าง marker icon ด้วยสีที่กำหนด
+// Create marker icon with specified color
 function createMarkerIcon(colorType) {
-  let markerColor = pastelColors.primary; // ค่าเริ่มต้นเป็นสีชมพู
+  let markerColor = pastelColors.primary; // Default to pink
   
   switch(colorType) {
     case 'primary':
@@ -200,7 +333,7 @@ function createMarkerIcon(colorType) {
       break;
   }
   
-  // สร้าง marker icon แบบน่ารักๆ ปรับให้เด่นชัดขึ้น
+  // Create a cute marker icon
   return L.divIcon({
     html: `
       <div class="animate-pulse" style="width: 45px; height: 45px; position: relative;">
@@ -223,9 +356,9 @@ function createMarkerIcon(colorType) {
   });
 }
 
-// ฟังก์ชันคำนวณระยะทางระหว่างสองจุดในหน่วย km
+// Calculate distance between two points in km
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // รัศมีโลกในหน่วย km
+  const R = 6371; // Earth's radius in km
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = 
@@ -233,206 +366,36 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
     Math.sin(dLon/2) * Math.sin(dLon/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  const distance = R * c; // ระยะทางในหน่วย km
+  const distance = R * c; // Distance in km
   return distance;
 }
 
-// ฟังก์ชันสร้าง label แสดงระยะทาง
+// Create distance label
 function createDistanceLabel(distance) {
-  return `<div class="distance-label">🛣️ ระยะทาง: ${distance.toFixed(1)} กม.</div>`;
+  return `<div class="distance-label">🛣️ Distance: ${distance.toFixed(1)} km</div>`;
 }
 
-// ฟังก์ชันสร้าง label แสดงระยะทางที่เหลือ
+// Create remaining distance label
 function createRemainingDistanceLabel(distance) {
   return `<div class="remaining-distance">
     <span class="remaining-distance-icon">🛬</span>
-    <span>เหลือ: ${distance.toFixed(1)} กม.</span>
+    <span>Remaining: ${distance.toFixed(1)} km</span>
   </div>`;
 }
 
-// ฟังก์ชันสำหรับการนำทางไปยังจุดหมาย
-async function navigateToDestination() {
-  const destinationInput = document.getElementById('destination').value;
-  
-  if (!destinationInput) {
-    showNotification('กรุณากรอกชื่อสถานที่ปลายทาง 🌍', 'error');
-    // เล่นเสียงแจ้งเตือนเมื่อมีข้อผิดพลาด
-    try {
-      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
-        window.SoundSystem.play('chime');
-      } else {
-        console.warn('SoundSystem not available or play method not found');
-      }
-    } catch (err) {
-      console.error('Error playing sound:', err);
-    }
-    return;
-  }
-  
-  if (animationInProgress) {
-    showNotification('กำลังบินอยู่! รอให้เครื่องบินถึงที่หมายก่อนนะ ✈️', 'info', true);
-    // เล่นเสียงแจ้งเตือนเมื่อมีข้อผิดพลาด
-    try {
-      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
-        window.SoundSystem.play('chime');
-      }
-    } catch (err) {
-      console.error('Error playing sound:', err);
-    }
-    return;
-  }
-  
-  try {
-    // เล่นเสียงตอนกดปุ่มนำทาง
-    try {
-      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
-        window.SoundSystem.play('request');
-      }
-    } catch (err) {
-      console.error('Error playing sound:', err);
-    }
-    
-    // เปลี่ยนข้อความปุ่มเป็นกำลังโหลด
-    const navigateBtn = document.getElementById('navigate');
-    navigateBtn.innerHTML = '<div class="animate-spin" style="border:2px solid #fff;border-top-color:transparent;border-radius:50%;width:20px;height:20px;margin:0 auto;"></div>';
-    navigateBtn.disabled = true;
-    
-    // เรียกใช้ API เพื่อค้นหาพิกัดของสถานที่
-    const response = await fetch(`/api/geocode?place=${encodeURIComponent(destinationInput)}`);
-    const data = await response.json();
-    
-    if (response.ok) {
-      // ถ้าค้นหาพิกัดสำเร็จ
-      const destination = { lat: data.lat, lng: data.lon };
-      // เก็บชื่อปลายทางไว้
-      currentDestination = destinationInput;
-      
-      // คืนค่าปุ่มกลับสู่สภาพปกติ
-      navigateBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3.9,17.4L2.5,19L1,17.5L9.2,9.3L13.6,13.6L17.4,9.8C18.2,9 19.5,9 20.3,9.8C21.1,10.6 21.1,11.9 20.3,12.7L16.4,16.6L13,13.1L3.9,17.4Z"/>
-        </svg>
-        <span>ไปยังจุดหมาย</span>
-      `;
-      navigateBtn.disabled = false;
-      
-      // ลบ marker และเส้นทางเก่า (ถ้ามี)
-      if (destinationMarker) map.removeLayer(destinationMarker);
-      if (pastRouteLine) map.removeLayer(pastRouteLine);
-      if (futureRouteLine) map.removeLayer(futureRouteLine);
-      if (airplaneMarker && map.hasLayer(airplaneMarker)) map.removeLayer(airplaneMarker);
-      if (distanceLabel) map.removeLayer(distanceLabel);
-      if (remainingDistanceLabel) map.removeLayer(remainingDistanceLabel);
-      
-      // เพิ่ม marker สำหรับจุดหมาย
-      const destinationIcon = createMarkerIcon('lavender');
-      
-      destinationMarker = L.marker([destination.lat, destination.lng], {
-        icon: destinationIcon
-      }).addTo(map)
-        .bindPopup(createCustomPopup(`📍 ${destinationInput}`))
-        .openPopup();
-      
-      // คำนวณระยะทางระหว่างจุดเริ่มต้นและจุดหมาย
-      totalDistance = calculateDistance(
-        currentPosition.lat, 
-        currentPosition.lng, 
-        destination.lat, 
-        destination.lng
-      );
-      
-      // วาดเส้นประระหว่างจุดเริ่มต้นกับจุดหมาย (เส้นที่ยังไม่ผ่าน)
-      futureRouteLine = L.polyline([[currentPosition.lat, currentPosition.lng], [destination.lat, destination.lng]], {
-        color: pastelColors.lavender,
-        weight: 5,  // เพิ่มความหนาจาก 4 เป็น 5
-        opacity: 0.8, // เพิ่มความทึบจาก 0.7 เป็น 0.8
-        dashArray: '12, 8' // ปรับเส้นประให้ชัดขึ้น
-      }).addTo(map);
-      
-      // สร้างเส้นทางที่ผ่านไปแล้ว (ยังไม่แสดง)
-      pastRouteLine = L.polyline([], {
-        color: pastelColors.peach,
-        weight: 5,  // เพิ่มความหนาจาก 4 เป็น 5
-        opacity: 0.7 // เพิ่มความทึบจาก 0.5 เป็น 0.7
-      }).addTo(map);
-      
-      // เพิ่ม label แสดงระยะทาง ที่ตำแหน่งกึ่งกลางของเส้นทาง
-      const middlePoint = L.latLng(
-        (currentPosition.lat + destination.lat) / 2,
-        (currentPosition.lng + destination.lng) / 2
-      );
-      
-      distanceLabel = L.marker(middlePoint, {
-        icon: L.divIcon({
-          html: createDistanceLabel(totalDistance),
-          className: '',
-          iconSize: [200, 30],
-          iconAnchor: [100, 15]
-        }),
-        interactive: false
-      }).addTo(map);
-      
-      // ปรับ view ให้เห็นทั้งเส้นทาง
-      map.fitBounds(futureRouteLine.getBounds(), { padding: [70, 70] });
-      
-      // รีเซ็ตตัวแปรควบคุมกล้อง
-      cameraFollow = true;
-      zoomOutTriggered = false;
-      
-      // เล่นเสียงเริ่มต้นการเดินทาง
-      try {
-        if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
-          window.SoundSystem.play('transition');
-        }
-      } catch (err) {
-        console.error('Error playing sound:', err);
-      }
-      
-      // เริ่มต้นการเคลื่อนที่ของเครื่องบิน
-      showNotification(`กำลังเดินทางไปยัง ${destinationInput} ✈️`, 'info');
-      animateAirplane(currentPosition, destination);
-    } else {
-      // คืนค่าปุ่มกลับสู่สภาพปกติ
-      navigateBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3.9,17.4L2.5,19L1,17.5L9.2,9.3L13.6,13.6L17.4,9.8C18.2,9 19.5,9 20.3,9.8C21.1,10.6 21.1,11.9 20.3,12.7L16.4,16.6L13,13.1L3.9,17.4Z"/>
-        </svg>
-        <span>ไปยังจุดหมาย</span>
-      `;
-      navigateBtn.disabled = false;
-      
-      showNotification(data.error || 'ไม่สามารถค้นหาสถานที่ได้ 😢', 'error');
-    }
-  } catch (error) {
-    console.error('Error navigating:', error);
-    
-    // คืนค่าปุ่มกลับสู่สภาพปกติ
-    const navigateBtn = document.getElementById('navigate');
-    navigateBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.9,17.4L2.5,19L1,17.5L9.2,9.3L13.6,13.6L17.4,9.8C18.2,9 19.5,9 20.3,9.8C21.1,10.6 21.1,11.9 20.3,12.7L16.4,16.6L13,13.1L3.9,17.4Z"/>
-      </svg>
-      <span>ไปยังจุดหมาย</span>
-    `;
-    navigateBtn.disabled = false;
-    
-    showNotification('เกิดข้อผิดพลาดในการนำทาง 😢', 'error');
-  }
-}
-
-// ฟังก์ชันสำหรับการเคลื่อนที่ของเครื่องบิน
+// Animate airplane movement between two points
 function animateAirplane(start, end) {
   animationInProgress = true;
   
-  // กำหนดเวลาในการเคลื่อนที่ 5 วินาที
-  const totalDuration = 5000; // 5 วินาที
+  // Animation duration - 5 seconds
+  const totalDuration = 5000;
   
-  // ฟังก์ชันสำหรับคำนวณตำแหน่งระหว่างสองจุด
+  // Function to interpolate between two values
   function interpolate(start, end, fraction) {
     return start + (end - start) * fraction;
   }
   
-  // ฟังก์ชันสำหรับการคำนวณมุมของเครื่องบิน (องศา)
+  // Calculate angle for airplane rotation (in degrees)
   function calculateAngle(startLat, startLng, endLat, endLng) {
     const dLng = (endLng - startLng) * Math.PI / 180;
     const startLatRad = startLat * Math.PI / 180;
@@ -443,12 +406,12 @@ function animateAirplane(start, end) {
              Math.sin(startLatRad) * Math.cos(endLatRad) * Math.cos(dLng);
     
     let angle = Math.atan2(y, x) * 180 / Math.PI;
-    // ปรับมุมให้ถูกต้องสำหรับการแสดงบนแผนที่
+    // Adjust angle for map display
     angle = (angle + 360) % 360;
     return angle;
   }
   
-  // คำนวณมุมสำหรับหมุนเครื่องบิน
+  // Calculate rotation angle
   const angle = calculateAngle(
     start.lat, 
     start.lng, 
@@ -456,21 +419,21 @@ function animateAirplane(start, end) {
     end.lng
   );
   
-  // เริ่มตำแหน่งของเครื่องบิน
+  // Initialize airplane position
   const initialPos = [start.lat, start.lng];
   
-  // สร้างไอคอนเครื่องบินที่มีการหมุนแล้ว
+  // Create rotated airplane icon
   const rotatedIcon = createAirplaneIcon(angle);
   airplaneMarker.setIcon(rotatedIcon);
   airplaneMarker.setLatLng(initialPos);
   
-  // แสดงเครื่องบินบนแผนที่
+  // Add airplane to map
   airplaneMarker.addTo(map);
   
-  // เริ่มเวลาเคลื่อนที่
+  // Start animation time
   const startTime = Date.now();
   
-  // เพิ่ม label แสดงระยะทางที่เหลือ
+  // Add remaining distance label
   remainingDistanceLabel = L.marker([0, 0], {
     icon: L.divIcon({
       html: createRemainingDistanceLabel(totalDistance),
@@ -481,24 +444,24 @@ function animateAirplane(start, end) {
     interactive: false
   }).addTo(map);
   
-  // ฟังก์ชันสำหรับการเคลื่อนที่ในแต่ละเฟรม
+  // Animation frame function
   function moveStep() {
     const currentTime = Date.now();
     const elapsedTime = currentTime - startTime;
-    const fraction = Math.min(elapsedTime / totalDuration, 1); // ค่าระหว่าง 0-1
+    const fraction = Math.min(elapsedTime / totalDuration, 1); // Value between 0-1
     
     if (fraction < 1) {
-      // คำนวณตำแหน่งปัจจุบัน
+      // Calculate current position
       const lat = interpolate(start.lat, end.lat, fraction);
       const lng = interpolate(start.lng, end.lng, fraction);
       
-      // อัพเดตตำแหน่งของเครื่องบิน
+      // Update airplane position
       airplaneMarker.setLatLng([lat, lng]);
       
-      // คำนวณระยะทางที่เหลือ
+      // Calculate remaining distance
       const remainingDistance = totalDistance * (1 - fraction);
       
-      // อัพเดต label แสดงระยะทางที่เหลือ ให้ติดตามเครื่องบิน
+      // Update remaining distance label to follow airplane
       remainingDistanceLabel.setLatLng([lat, lng]);
       remainingDistanceLabel.setIcon(L.divIcon({
         html: createRemainingDistanceLabel(remainingDistance),
@@ -507,44 +470,39 @@ function animateAirplane(start, end) {
         iconAnchor: [75, 40]
       }));
       
-      // ถ้าการติดตามกล้องเปิดอยู่ ให้แผนที่ติดตามเครื่องบินตลอดเวลา
+      // If camera follow is enabled, center map on airplane
       map.panTo([lat, lng]);
       
-      // อัพเดตเส้นทางที่ผ่านไปแล้ว
+      // Update past route
       const pastCoords = [
         [start.lat, start.lng],
         [lat, lng]
       ];
       pastRouteLine.setLatLngs(pastCoords);
       
-      // อัพเดตเส้นทางที่ยังไม่ผ่าน
+      // Update future route
       const futureCoords = [
         [lat, lng],
         [end.lat, end.lng]
       ];
       futureRouteLine.setLatLngs(futureCoords);
       
-      // ทำการเคลื่อนที่ต่อในเฟรมถัดไป
+      // Continue animation in next frame
       requestAnimationFrame(moveStep);
     } else {
-      // เมื่อการเคลื่อนที่เสร็จสิ้น
+      // Animation complete
       
-      // ลบ label แสดงระยะทางที่เหลือ
+      // Remove remaining distance label
       if (remainingDistanceLabel) {
         map.removeLayer(remainingDistanceLabel);
       }
       
-      // เล่นเสียงเมื่อถึงจุดหมาย
-      try {
-        if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
-          window.SoundSystem.play('celebration');
-        }
-      } catch (err) {
-        console.error('Error playing sound:', err);
+      // Play celebration sound
+      if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
+        window.SoundSystem.play('celebration');
       }
       
-      // เพิ่มเอฟเฟกต์เมื่อถึงจุดหมาย
-      // สร้างเอฟเฟกต์แสงระเบิดเมื่อถึงจุดหมาย
+      // Add arrival effect
       const arrivalEffect = L.divIcon({
         html: `
           <div class="arrival-effect" style="
@@ -566,45 +524,44 @@ function animateAirplane(start, end) {
       
       const effectMarker = L.marker([end.lat, end.lng], { icon: arrivalEffect }).addTo(map);
       
-      // ลบเอฟเฟกต์หลังจาก 1.2 วินาที
+      // Remove effect after 1.2 seconds
       setTimeout(() => {
         map.removeLayer(effectMarker);
       }, 1200);
       
-      // ลบเส้นทางทั้งหมดและเครื่องบิน
+      // Remove routes and airplane
       if (pastRouteLine) map.removeLayer(pastRouteLine);
       if (futureRouteLine) map.removeLayer(futureRouteLine);
       if (distanceLabel) map.removeLayer(distanceLabel);
       map.removeLayer(airplaneMarker);
       
-      // ซูมเข้าไปที่จุดหมายให้เห็นใกล้มากๆ
-      // ใช้การซูมแบบ 2 ขั้นตอนเพื่อเอฟเฟกต์ที่ดีกว่า
+      // Two-step zoom for better effect
       setTimeout(() => {
-        // ขั้นที่ 1: ซูมเข้าไประดับเมือง
+        // Step 1: Zoom to city level
         map.flyTo([end.lat, end.lng], 14, {
           duration: 1.5
         });
         
-        // รอให้ซูมแรกเสร็จ แล้วจึงซูมต่อ
+        // Wait for first zoom to complete
         map.once('moveend', function() {
-          // ขั้นที่ 2: ซูมเข้าไประดับถนนหรือตึก (ใกล้มากๆ)
+          // Step 2: Zoom to street level
           map.flyTo([end.lat, end.lng], 17, {
             duration: 1.5
           });
           
-          // รอให้ซูมที่สองเสร็จ แล้วจึงแสดงกล่องคะแนน
+          // Wait for second zoom to complete
           map.once('moveend', function() {
             setTimeout(() => {
-              // อัพเดตตำแหน่งปัจจุบัน
+              // Update current position
               currentPosition = end;
               if (currentMarker) map.removeLayer(currentMarker);
               currentMarker = destinationMarker;
               
-              // แสดงกล่องให้คะแนน
+              // Show rating modal
               console.log('Opening rating modal for:', currentDestination, end.lat, end.lng);
               openRatingModal(currentDestination, end.lat, end.lng);
               
-              // สิ้นสุดการเคลื่อนที่
+              // Animation complete
               animationInProgress = false;
             }, 500);
           });
@@ -613,16 +570,16 @@ function animateAirplane(start, end) {
     }
   }
   
-  // เริ่มต้นการเคลื่อนที่
+  // Start animation
   moveStep();
 }
 
-// ฟังก์ชันแสดงการแจ้งเตือน
+// Show notification
 function showNotification(message, type = 'success', animate = false) {
   const notification = document.getElementById('notification');
   const notificationMessage = document.getElementById('notification-message');
   
-  // กำหนดสีตามประเภทการแจ้งเตือน
+  // Set color based on notification type
   switch(type) {
     case 'error':
       notification.style.background = pastelColors.primary; // Pink
@@ -643,10 +600,10 @@ function showNotification(message, type = 'success', animate = false) {
       break;
   }
   
-  // กำหนดข้อความ
+  // Set message
   notificationMessage.textContent = message;
   
-  // ถ้ากำหนดให้มีแอนิเมชัน
+  // Add animation if specified
   if (animate) {
     notificationMessage.classList.add('animate-bounce');
     setTimeout(() => {
@@ -654,14 +611,14 @@ function showNotification(message, type = 'success', animate = false) {
     }, 1000);
   }
   
-  // แสดงการแจ้งเตือน
+  // Show notification
   notification.classList.add('active');
   
-  // ซ่อนการแจ้งเตือนหลังจาก 3 วินาที
+  // Hide notification after 3 seconds
   setTimeout(() => {
     notification.classList.remove('active');
   }, 3000);
 }
 
-// เรียกใช้ฟังก์ชันเริ่มต้นแผนที่เมื่อหน้าเว็บโหลดเสร็จ
+// Initialize map when page loads
 document.addEventListener('DOMContentLoaded', initMap);

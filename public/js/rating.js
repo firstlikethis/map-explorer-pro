@@ -1,26 +1,26 @@
 /**
- * rating.js - จัดการระบบการให้คะแนนสถานที่
- * Map Explorer PRO - Pastel Cute Version
+ * rating.js - Manages place rating system
+ * Map Explorer PRO - TikTok Live Edition
  */
 
-// ตัวแปรสำหรับระบบคะแนน
+// Rating system variables
 let ratingInProgress = false;
 let finalScore = 0;
 let currentRatingPlace = '';
 let currentRatingLat = 0;
 let currentRatingLng = 0;
 let countInterval;
-let autoCloseTimeout; // สำหรับการปิดอัตโนมัติ
-let autoSaveTimeout; // สำหรับการบันทึกอัตโนมัติ
+let autoCloseTimeout; // For automatic closing
+let autoSaveTimeout; // For automatic saving
 
-// ฟังก์ชันสร้างเอฟเฟกต์พลุและดาวระยิบ
+// Function to add confetti effect
 function addConfettiEffect() {
-  // สร้าง element สำหรับพลุและดาว
+  // Create element for confetti and stars
   const confettiContainer = document.createElement('div');
   confettiContainer.className = 'confetti-container';
   document.body.appendChild(confettiContainer);
   
-  // สร้างดาวและพลุจำนวนหนึ่ง
+  // Create several confetti pieces
   for (let i = 0; i < 40; i++) {
     const confetti = document.createElement('div');
     confetti.className = 'confetti';
@@ -30,21 +30,21 @@ function addConfettiEffect() {
     confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
     
     if (Math.random() > 0.6) {
-      // สร้างรูปดาว
+      // Create star shape
       confetti.innerHTML = `
         <svg viewBox="0 0 24 24" width="15" height="15">
           <path fill="${getRandomColor()}" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/>
         </svg>
       `;
     } else if (Math.random() > 0.3) {
-      // สร้างรูปหัวใจ
+      // Create heart shape
       confetti.innerHTML = `
         <svg viewBox="0 0 24 24" width="15" height="15">
           <path fill="${getRandomColor()}" d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
         </svg>
       `;
     } else {
-      // สร้างรูปน่ารักอื่นๆ
+      // Create other cute shapes
       const emojis = ['🌟', '✨', '💖', '🎀', '🌈', '🦄', '🍭', '🌸'];
       const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
       confetti.innerHTML = `<div style="font-size: 20px;">${randomEmoji}</div>`;
@@ -52,7 +52,7 @@ function addConfettiEffect() {
     
     confettiContainer.appendChild(confetti);
     
-    // สร้างแอนิเมชันสำหรับแต่ละชิ้น
+    // Create animation for each piece
     const animation = confetti.animate([
       { 
         transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(0deg)`,
@@ -68,10 +68,10 @@ function addConfettiEffect() {
       fill: 'forwards'
     });
     
-    // ลบเมื่อแอนิเมชันจบ
+    // Remove when animation ends
     animation.onfinish = () => {
       confetti.remove();
-      // ลบ container เมื่อไม่มี confetti เหลือ
+      // Remove container when empty
       if (confettiContainer.children.length === 0) {
         confettiContainer.remove();
       }
@@ -79,15 +79,15 @@ function addConfettiEffect() {
   }
 }
 
-// ฟังก์ชันสร้างสีสุ่ม - โทนพาสเทลสดใส
+// Function to get random pastel color
 function getRandomColor() {
   const colors = [
-    '#FF78A9', // Pink - สดขึ้นจากเดิม #ffb6c1
-    '#75C6E0', // Light Blue - สดขึ้นจากเดิม #a5dee5
-    '#FFDA4A', // Light Yellow - สดขึ้นจากเดิม #fdfd96
-    '#80E8B6', // Mint Green - สดขึ้นจากเดิม #b5ead7
-    '#C278FF', // Lavender - สดขึ้นจากเดิม #e0c3fc
-    '#FFB26B', // Peach - สดขึ้นจากเดิม #ffdab9
+    '#FF78A9', // Pink
+    '#75C6E0', // Light Blue
+    '#FFDA4A', // Light Yellow
+    '#80E8B6', // Mint Green
+    '#C278FF', // Lavender
+    '#FFB26B', // Peach
     '#c9c3f7', // Light Purple
     '#ff9aa2', // Light Red
     '#ffdfba'  // Light Orange
@@ -95,11 +95,11 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-// ฟังก์ชันเปิดกล่องให้คะแนน
+// Function to open rating modal
 function openRatingModal(placeName, lat, lng) {
   console.log('Rating modal opened for:', placeName, lat, lng);
   
-  // เล่นเสียงเปิดกล่องให้คะแนน
+  // Play rating sound
   try {
     if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
       window.SoundSystem.play('rating');
@@ -110,48 +110,45 @@ function openRatingModal(placeName, lat, lng) {
     console.error('Error playing rating sound:', err);
   }
   
-  // บันทึกข้อมูลสถานที่ที่จะให้คะแนน
+  // Store place details
   currentRatingPlace = placeName;
   currentRatingLat = lat;
   currentRatingLng = lng;
   
-  // กำหนดชื่อสถานที่ในกล่องให้คะแนน
+  // Set place name in rating modal
   document.getElementById('rating-place-name').textContent = placeName;
   
-  // รีเซ็ตค่าตัวนับคะแนนและ progress bar
+  // Reset score counter and progress bar
   document.getElementById('score-counter').textContent = '0';
   document.getElementById('score-counter').className = 'score-counter';
   document.getElementById('progress-fill').style.width = '0%';
   
-  // หาตำแหน่งพิกัดของจุดหมายบนหน้าจอ
-  const point = map.latLngToContainerPoint([lat, lng]);
-  
-  // ตั้งค่าตำแหน่งของโมดัลให้อยู่เหนือจุดหมาย
+  // Get modal element
   const modal = document.getElementById('rating-modal');
   
-  // แสดงโมดัลให้อยู่ตรงกลางหน้าจอก่อน แล้วจึงเลื่อนลงมาด้วยแอนิเมชัน
+  // Set modal initial position for animation
   const modalContent = document.querySelector('.modal-content');
   modalContent.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
   modalContent.style.transform = 'translateY(-50px) scale(0.9)';
   
-  // แสดงกล่องให้คะแนนด้วยแอนิเมชันน่ารัก
+  // Show rating modal with animation
   modal.classList.add('active');
   
-  // ทำแอนิเมชันเลื่อนเข้ามา
+  // Animate slide in
   setTimeout(() => {
     modalContent.style.transform = 'translateY(0) scale(1)';
   }, 100);
   
-  // เพิ่มเอฟเฟกต์พลุและดาวระยิบเมื่อโมดัลปรากฏ
+  // Add confetti effect when modal appears
   addConfettiEffect();
   
-  // เริ่มต้นการนับคะแนน
+  // Start counting score
   setTimeout(() => {
     console.log('Starting score counting...');
     startCountingScore();
   }, 500);
 
-  // ยกเลิก timeout เดิม (ถ้ามี)
+  // Clear previous timeouts (if any)
   if (autoCloseTimeout) {
     clearTimeout(autoCloseTimeout);
   }
@@ -160,7 +157,7 @@ function openRatingModal(placeName, lat, lng) {
   }
 }
 
-// ฟังก์ชันเริ่มนับคะแนน 1-100
+// Function to start counting score from 1-100
 function startCountingScore() {
   if (ratingInProgress) return;
   
@@ -171,24 +168,22 @@ function startCountingScore() {
   const progressFill = document.getElementById('progress-fill');
   const message = document.querySelector('.rating-message');
   
-  // สุ่มคะแนนสุดท้ายระหว่าง 1-100
+  // Generate random final score between 1-100
   finalScore = Math.floor(Math.random() * 100) + 1;
   console.log('Final random score:', finalScore);
   
-  // กำหนดความเร็วในการนับเพื่อให้ใช้เวลาประมาณ 3 วินาที
+  // Set counting speed to take about 3 seconds
   const speed = 30; // milliseconds
   const step = 1;
   
-  message.textContent = 'กำลังประเมินคะแนนของสถานที่...';
+  message.textContent = 'Calculating score for this location...';
   
-  // ไม่ต้องใช้ Web Audio API อีกต่อไป เนื่องจากเรามีระบบเสียงใหม่แล้ว
-  
-  // ใช้ setInterval เพื่อนับคะแนนขึ้นเรื่อยๆ
+  // Use setInterval to count up score
   countInterval = setInterval(() => {
     score += step;
     console.log('Current score:', score);
     
-    // เล่นเสียงเมื่อนับเลขทุกๆ 5 คะแนน
+    // Play sound every 5 points
     if (score % 5 === 0) {
       try {
         if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
@@ -199,11 +194,11 @@ function startCountingScore() {
       }
     }
     
-    // อัพเดตตัวนับคะแนนและ progress bar
+    // Update score counter and progress bar
     scoreCounter.textContent = score;
     progressFill.style.width = `${score}%`;
     
-    // ปรับสีของคะแนนตามระดับ
+    // Change color based on score level
     if (score >= 80) {
       scoreCounter.className = 'score-counter high';
     } else if (score < 40) {
@@ -212,39 +207,18 @@ function startCountingScore() {
       scoreCounter.className = 'score-counter';
     }
     
-    // ถ้าถึงคะแนนสุดท้าย ให้หยุดการนับ
+    // Stop counting when final score is reached
     if (score >= finalScore) {
       clearInterval(countInterval);
       console.log('Final score reached:', finalScore);
       
-      // เพิ่มเสียงเมื่อนับเสร็จตามระดับคะแนน
-      if (finalScore >= 80) {
-        // เสียงคะแนนสูงถูกเล่นในส่วนถัดไป
-      } else if (finalScore >= 40) {
-        try {
-          if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
-            window.SoundSystem.play('chime');
-          }
-        } catch (err) {
-          console.error('Error playing final chime sound:', err);
-        }
-      } else {
-        try {
-          if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
-            window.SoundSystem.play('chime');
-          }
-        } catch (err) {
-          console.error('Error playing final chime sound:', err);
-        }
-      }
-      
-      // เพิ่ม effect เมื่อนับเสร็จ
+      // Add bounce effect when counting is done
       scoreCounter.classList.add('animate-bounce');
       
-      // เพิ่มพลุและเล่นเสียงสำหรับคะแนนสูง
+      // Add confetti and play sound for high scores
       if (finalScore >= 80) {
         addConfettiEffect();
-        // เล่นเสียงพิเศษสำหรับคะแนนสูง
+        // Play special sound for high rating
         try {
           if (window.SoundSystem && typeof window.SoundSystem.play === 'function') {
             window.SoundSystem.play('highRating');
@@ -256,33 +230,33 @@ function startCountingScore() {
         }
       }
       
-      // อัพเดตข้อความตามระดับคะแนน
+      // Update message based on score
       if (finalScore >= 85) {
-        message.textContent = '🌟 สถานที่นี้น่าทึ่งมาก! คะแนนสูงสุดยอด';
-        message.style.color = '#80E8B6'; // สีเขียวมินต์สดขึ้น
+        message.textContent = '🌟 Amazing place! Top-tier score';
+        message.style.color = '#80E8B6'; // Mint
       } else if (finalScore >= 70) {
-        message.textContent = '✨ สถานที่นี้น่าไปเยี่ยมชมสุดๆ';
-        message.style.color = '#75C6E0'; // สีฟ้าสดขึ้น
+        message.textContent = '✨ This place is definitely worth visiting!';
+        message.style.color = '#75C6E0'; // Light Blue
       } else if (finalScore >= 55) {
-        message.textContent = '🌈 สถานที่นี้น่าสนใจมาก';
-        message.style.color = '#C278FF'; // สีม่วงสดขึ้น
+        message.textContent = '🌈 This place is quite interesting';
+        message.style.color = '#C278FF'; // Lavender
       } else if (finalScore >= 40) {
-        message.textContent = '👍 สถานที่นี้น่าพอใจ';
-        message.style.color = '#FFB26B'; // สีส้มพีชสดขึ้น
+        message.textContent = '👍 This place is satisfactory';
+        message.style.color = '#FFB26B'; // Peach
       } else {
-        message.textContent = '🌱 สถานที่นี้มีความเรียบง่าย';
-        message.style.color = '#FF78A9'; // สีชมพูสดขึ้น
+        message.textContent = '🌱 This place is quite simple';
+        message.style.color = '#FF78A9'; // Pink
       }
       
-      // จบการนับคะแนน
+      // End rating progress
       ratingInProgress = false;
       
-      // ทำการบันทึกคะแนนอัตโนมัติหลังจากนับเสร็จ 1 วินาที
+      // Automatically save score after 1 second
       autoSaveTimeout = setTimeout(() => {
         saveRating(true);
       }, 1000);
       
-      // ตั้งเวลาปิดอัตโนมัติ 5 วินาทีหลังจากนับเสร็จ
+      // Automatically close modal after 5 seconds
       autoCloseTimeout = setTimeout(() => {
         closeRatingModal();
       }, 5000);
@@ -290,80 +264,86 @@ function startCountingScore() {
   }, speed);
 }
 
-// ฟังก์ชันปิดกล่องให้คะแนน
+// Function to close rating modal
 function closeRatingModal() {
   document.getElementById('rating-modal').classList.remove('active');
   
-  // หยุดการนับถ้ายังนับอยู่
+  // Stop counting if still in progress
   if (countInterval) {
     clearInterval(countInterval);
     ratingInProgress = false;
   }
   
-  // ยกเลิก timeout การปิดอัตโนมัติ
+  // Clear auto-close timeout
   if (autoCloseTimeout) {
     clearTimeout(autoCloseTimeout);
     autoCloseTimeout = null;
   }
   
-  // ยกเลิก timeout การบันทึกอัตโนมัติ
+  // Clear auto-save timeout
   if (autoSaveTimeout) {
     clearTimeout(autoSaveTimeout);
     autoSaveTimeout = null;
   }
 }
 
-// ฟังก์ชันบันทึกคะแนน
+// Function to save rating
 async function saveRating(isAutoSave = false) {
   try {
-    // หากกำลังนับคะแนนอยู่ ให้รอจนนับเสร็จ
+    // If rating is in progress, wait until complete
     if (ratingInProgress) {
       return;
     }
     
-    // ส่งข้อมูลคะแนนไปยังเซิร์ฟเวอร์
+    // Create rating data object
+    const ratingData = {
+      place: currentRatingPlace,
+      score: finalScore,
+      lat: currentRatingLat,
+      lng: currentRatingLng
+    };
+    
+    // Notify the queue system that this location is complete
+    if (window.locationQueue) {
+      window.locationQueue.notifyAnimationComplete(ratingData);
+    }
+    
+    // Send rating data to server
     const response = await fetch('/api/ratings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        place: currentRatingPlace,
-        score: finalScore,
-        lat: currentRatingLat,
-        lng: currentRatingLng
-      })
+      body: JSON.stringify(ratingData)
     });
     
     const data = await response.json();
     
     if (response.ok) {
-      // แสดงการแจ้งเตือนว่าบันทึกสำเร็จ
-      if (isAutoSave) {
-        showNotification(`บันทึกคะแนน ${finalScore} สำหรับ ${currentRatingPlace} อัตโนมัติแล้ว ✨`, 'success');
-      } else {
-        showNotification(`บันทึกคะแนน ${finalScore} สำหรับ ${currentRatingPlace} เรียบร้อยแล้ว`, 'success');
+      // Only show notification for successful saving but with minimal UI impact
+      // This is now automatic and doesn't need to distract the stream
+      if (!isAutoSave) {
+        showNotification(`Score saved: ${finalScore} for ${currentRatingPlace}`, 'success');
       }
       
-      // อัพเดต Leaderboard
+      // Update leaderboard
       loadLeaderboard();
     } else {
-      showNotification(data.error || 'เกิดข้อผิดพลาดในการบันทึกคะแนน', 'error');
+      console.error('Error saving rating:', data.error);
     }
   } catch (error) {
     console.error('Error saving rating:', error);
-    showNotification('เกิดข้อผิดพลาดในการบันทึกคะแนน', 'error');
   }
 }
 
-// ฟังก์ชันโหลดข้อมูล Top 5 สถานที่คะแนนสูงสุด
+// Function to load Top 5 highest rated places
 async function loadLeaderboard() {
   try {
     const response = await fetch('/api/ratings/top');
     const data = await response.json();
     
     if (response.ok) {
-      // อัพเดตรายการสถานที่
+      // Update places list
       updateLeaderboardUI(data.topPlaces);
     } else {
       console.error('Error loading leaderboard:', data.error);
@@ -373,27 +353,27 @@ async function loadLeaderboard() {
   }
 }
 
-// ฟังก์ชันอัพเดต UI ของ Leaderboard
+// Function to update leaderboard UI
 function updateLeaderboardUI(places) {
   const leaderboardList = document.getElementById('top-places');
   
-  // ล้างรายการเดิม
+  // Clear previous list
   leaderboardList.innerHTML = '';
   
-  // ถ้าไม่มีข้อมูล
+  // If no data
   if (!places || places.length === 0) {
-    leaderboardList.innerHTML = '<li class="no-places">ยังไม่มีสถานที่ในระบบ</li>';
+    leaderboardList.innerHTML = '<li class="no-places">No places yet in the system</li>';
     return;
   }
   
-  // ไอคอนสำหรับแสดงอันดับพิเศษ
+  // Special rank icons
   const specialRankIcons = [
-    '👑', // อันดับ 1
-    '🥈', // อันดับ 2
-    '🥉'  // อันดับ 3
+    '👑', // Rank 1
+    '🥈', // Rank 2
+    '🥉'  // Rank 3
   ];
   
-  // สร้างรายการใหม่
+  // Create new list
   places.forEach((place, index) => {
     const rankClass = index < 3 ? `rank-${index + 1}` : '';
     
@@ -401,11 +381,11 @@ function updateLeaderboardUI(places) {
     listItem.className = 'place-item animate-fade-in';
     listItem.style.animationDelay = `${index * 0.1}s`;
     
-    // แยกชื่อเมืองและประเทศ/รายละเอียด (หากมี)
+    // Split place name and details (if any)
     let placeName = place.place;
     let placeLocation = '';
     
-    // ตรวจสอบว่ามีเครื่องหมาย - หรือ , เพื่อแยกระหว่างชื่อเมืองและประเทศ
+    // Check for separator to split between place name and country
     if (place.place.includes(' - ')) {
       const parts = place.place.split(' - ');
       placeName = parts[0].trim();
@@ -416,7 +396,7 @@ function updateLeaderboardUI(places) {
       placeLocation = parts.slice(1).join(', ').trim();
     }
     
-    // สร้าง HTML สำหรับรายการ
+    // Create HTML for list item
     listItem.innerHTML = `
       <div class="place-rank ${rankClass}">
         ${index < 3 ? specialRankIcons[index] : index + 1}
@@ -424,7 +404,7 @@ function updateLeaderboardUI(places) {
       <div class="place-info">
         <div class="place-name">${placeName}</div>
         ${placeLocation ? `<div class="place-location">${placeLocation}</div>` : ''}
-        <div class="place-score">${place.score} คะแนน</div>
+        <div class="place-score">${place.score} points</div>
       </div>
     `;
     
@@ -432,36 +412,36 @@ function updateLeaderboardUI(places) {
   });
 }
 
-// แสดงการแจ้งเตือน - ใช้สีพาสเทลสดใสมากขึ้น
+// Show notification with brighter pastel colors
 function showNotification(message, type = 'success', animate = false) {
   const notification = document.getElementById('notification');
   const notificationMessage = document.getElementById('notification-message');
   
-  // กำหนดสีตามประเภทการแจ้งเตือน แบบพาสเทลสดใส
+  // Set color based on notification type
   switch(type) {
     case 'error':
-      notification.style.background = '#FF78A9'; // Pink สดขึ้น
+      notification.style.background = '#FF78A9'; // Brighter Pink
       notification.style.color = '#a24857';
       break;
     case 'warning':
-      notification.style.background = '#FFDA4A'; // Light Yellow สดขึ้น
+      notification.style.background = '#FFDA4A'; // Brighter Light Yellow
       notification.style.color = '#8c7800';
       break;
     case 'info':
-      notification.style.background = '#75C6E0'; // Light Blue สดขึ้น
+      notification.style.background = '#75C6E0'; // Brighter Light Blue
       notification.style.color = '#336b72';
       break;
     case 'success':
     default:
-      notification.style.background = '#80E8B6'; // Mint Green สดขึ้น
+      notification.style.background = '#80E8B6'; // Brighter Mint Green
       notification.style.color = '#2d7a5d';
       break;
   }
   
-  // กำหนดข้อความ
+  // Set message
   notificationMessage.textContent = message;
   
-  // ถ้ากำหนดให้มีแอนิเมชัน
+  // Add animation if specified
   if (animate) {
     notificationMessage.classList.add('animate-bounce');
     setTimeout(() => {
@@ -469,29 +449,19 @@ function showNotification(message, type = 'success', animate = false) {
     }, 1000);
   }
   
-  // แสดงการแจ้งเตือน
+  // Show notification
   notification.classList.add('active');
   
-  // ซ่อนการแจ้งเตือนหลังจาก 3 วินาที
+  // Hide notification after 3 seconds
   setTimeout(() => {
     notification.classList.remove('active');
   }, 3000);
 }
 
-// เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM content loaded, initializing rating system...');
   
-  // โหลดข้อมูล Leaderboard
+  // Load leaderboard
   loadLeaderboard();
-  
-  // เพิ่ม event listener สำหรับปุ่มปิดกล่องให้คะแนน
-  document.getElementById('close-rating').addEventListener('click', closeRatingModal);
-  
-  // เพิ่ม event listener สำหรับคลิกพื้นหลังเพื่อปิดกล่องให้คะแนน
-  document.getElementById('rating-modal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('rating-modal')) {
-      closeRatingModal();
-    }
-  });
 });

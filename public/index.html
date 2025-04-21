@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Map Explorer PRO ✨</title>
+  <title>Map Explorer PRO ✨ TikTok Live Edition</title>
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <!-- Custom CSS -->
@@ -12,51 +12,65 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Itim&family=Mali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- เพิ่ม Favicon -->
+  <link href="https://fonts.googleapis.com/css2?family=Itim&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
 </head>
 <body>
-  <!-- แผนที่หลัก -->
+  <!-- Main Map -->
   <div id="map"></div>
   
-  <!-- แผงควบคุม -->
-  <div class="controls">
-    <div class="controls-header">
-      <div class="logo">
-        <svg class="globe-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM4 12C4 11.39 4.08 10.79 4.21 10.22L8 13.91V15C8 16.1 8.9 17 10 17H14V19.19C13.35 19.39 12.68 19.5 12 19.5C7.59 19.5 4 16.09 4 12ZM19.31 15.68C18.87 15.25 18.22 15 17.5 15H17V13C17 12.45 16.55 12 16 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.78 20 8.65 20 12C20 13.32 19.75 14.57 19.31 15.68Z"/>
-        </svg>
-        <h1>Map Explorer <span>PRO</span></h1>
-      </div>
-      <div class="control-buttons">
-        <button id="toggle-sound" class="toggle-btn sound-btn">
-          <svg id="sound-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
-          </svg>
-          <span>เปิดเสียง</span>
-        </button>
-        <button id="toggle-leaderboard" class="toggle-btn">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 7H20.5L15 1.5V7M8 0H16L22 6V18C22 19.1 21.1 20 20 20H8C6.89 20 6 19.1 6 18V2C6 0.89 6.89 0 8 0M10 4C8.9 4 8 4.9 8 6C8 7.1 8.9 8 10 8C11.1 8 12 7.1 12 6C12 4.9 11.1 4 10 4M4 4C2.9 4 2 4.9 2 6V20C2 21.1 2.9 22 4 22H18V20H4V4Z"/>
-          </svg>
-          <span>รีเฟรชอันดับ</span>
-        </button>
-      </div>
+  <!-- TikTok Live Status Bar -->
+  <div class="tiktok-status-bar">
+    <div class="tiktok-status-container">
+      <div id="tiktok-live-status" class="tiktok-live-indicator">⚫ OFFLINE</div>
+      <div id="tiktok-viewer-count" class="tiktok-viewer-count">👀 0</div>
     </div>
-    
-    <div class="search-container">
-      <input type="text" id="destination" placeholder="ป้อนชื่อเมืองปลายทาง..." />
-      <button id="navigate" class="primary-btn">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3.9,17.4L2.5,19L1,17.5L9.2,9.3L13.6,13.6L17.4,9.8C18.2,9 19.5,9 20.3,9.8C21.1,10.6 21.1,11.9 20.3,12.7L16.4,16.6L13,13.1L3.9,17.4Z"/>
-        </svg>
-        <span>ไปยังจุดหมาย</span>
-      </button>
+    <div id="tiktok-live-title" class="tiktok-live-title">Map Explorer PRO Live!</div>
+  </div>
+  
+  <!-- Stream Overlay Info -->
+  <div class="stream-overlay">
+    <div class="stream-instructions">
+      <h2>✨ Join the Adventure! ✨</h2>
+      <p>Type <strong>Location: [place name]</strong> in TikTok comments</p>
+      <p>For example: <em>Location: Tokyo</em> or <em>Location: Eiffel Tower</em></p>
+      <div class="stream-example">
+        <div class="example-comment">
+          <span class="example-username">@travellover123:</span>
+          <span class="example-text">Location: Grand Canyon</span>
+        </div>
+      </div>
     </div>
   </div>
   
-  <!-- กล่อง Leaderboard -->
+  <!-- Queue Panel -->
+  <div id="queue-container" class="queue-container">
+    <div class="queue-header">
+      <h2>
+        <svg class="plane-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21,16V14L13,9V3.5A1.5,1.5,0,0,0,11.5,2h0A1.5,1.5,0,0,0,10,3.5V9L2,14V16L10,13.5V19L8,20.5V22L11.5,21L15,22V20.5L13,19V13.5Z"/>
+        </svg>
+        Location Queue
+      </h2>
+    </div>
+    
+    <div id="current-item" class="current-item hidden">
+      <!-- Current location will be inserted here by JS -->
+    </div>
+    
+    <div class="queue-content">
+      <p id="empty-queue-message" class="empty-queue-message">
+        No locations in queue yet! 🌍<br>
+        Comment on TikTok Live to add one!
+      </p>
+      <ul id="queue-list" class="queue-list">
+        <!-- Queue items will be inserted here by JS -->
+      </ul>
+    </div>
+  </div>
+  
+  <!-- Leaderboard -->
   <div class="leaderboard-container active">
     <div class="leaderboard">
       <div class="leaderboard-header">
@@ -64,34 +78,39 @@
           <svg class="star-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"/>
           </svg>
-          Top 5 สถานที่คะแนนสูงสุด
+          Top 5 Highest Rated Places
         </h2>
       </div>
       <div class="leaderboard-content">
         <ul id="top-places">
-          <!-- สถานที่จะถูกเพิ่มด้วย JavaScript -->
+          <!-- Places will be added by JavaScript -->
         </ul>
       </div>
     </div>
   </div>
   
-  <!-- กล่องให้คะแนน -->
+  <!-- TikTok Comments Display -->
+  <div id="tiktok-comments-container" class="tiktok-comments-container">
+    <div class="comments-header">
+      <h3>💬 Live Comments</h3>
+    </div>
+    <div id="tiktok-comments" class="tiktok-comments">
+      <!-- Comments will be added dynamically -->
+    </div>
+  </div>
+  
+  <!-- Rating Modal -->
   <div id="rating-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>ให้คะแนนสถานที่</h2>
-        <button id="close-rating" class="close-btn">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
-          </svg>
-        </button>
+        <h2>Rating this Place</h2>
       </div>
       <div class="modal-body">
         <div class="rating-place-info">
-          <h3 id="rating-place-name">กรุงเทพมหานคร</h3>
+          <h3 id="rating-place-name">Paris</h3>
           <div class="score-animation-container">
             <div class="score-counter" id="score-counter">0</div>
-            <div class="score-label">คะแนน</div>
+            <div class="score-label">points</div>
           </div>
         </div>
         <div class="rating-progress">
@@ -99,8 +118,7 @@
             <div class="progress-fill" id="progress-fill"></div>
           </div>
         </div>
-        <p class="rating-message">กำลังสุ่มคะแนนให้กับสถานที่นี้...</p>
-        <!-- ลบปุ่มบันทึกคะแนนออก เพราะบันทึกอัตโนมัติแล้ว -->
+        <p class="rating-message">Calculating random score for this location...</p>
       </div>
     </div>
   </div>
@@ -111,33 +129,33 @@
       <svg class="notification-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
       </svg>
-      <span id="notification-message">บันทึกคะแนนเรียบร้อยแล้ว!</span>
+      <span id="notification-message">Location added to queue!</span>
     </div>
   </div>
   
   <!-- Volume Control Panel -->
   <div id="volume-control" class="volume-container">
-    <h3 style="margin: 0 0 10px; font-size: 16px;">🎵 ระดับความดัง</h3>
+    <h3 style="margin: 0 0 10px; font-size: 16px;">🎵 Volume Control</h3>
     <div style="width: 100%;">
       <div style="display: flex; align-items: center; margin-bottom: 5px;">
-        <span style="font-size: 12px; margin-right: 10px;">🎶 เพลง</span>
+        <span style="font-size: 12px; margin-right: 10px;">🎶 Music</span>
         <input type="range" id="music-volume" class="volume-slider" min="0" max="100" value="40">
       </div>
       <div style="display: flex; align-items: center;">
-        <span style="font-size: 12px; margin-right: 10px;">🔊 เอฟเฟกต์</span>
+        <span style="font-size: 12px; margin-right: 10px;">🔊 Effects</span>
         <input type="range" id="effects-volume" class="volume-slider" min="0" max="100" value="60">
       </div>
     </div>
   </div>
 
-  <!-- ระบบเสียง -->
+  <!-- Audio System -->
   <div id="audio-system" style="display: none;">
-    <!-- เพลงพื้นหลัง (เล่นแบบ loop) -->
+    <!-- Background music (loops) -->
     <audio id="background-music" loop>
       <source src="assets/music/music.mp3" type="audio/mp3">
     </audio>
     
-    <!-- เสียงต่างๆ -->
+    <!-- Sound effects -->
     <audio id="sound-celebration" preload="auto">
       <source src="assets/sounds/celebration.mp3" type="audio/mp3">
     </audio>
@@ -158,15 +176,15 @@
     </audio>
   </div>
 
-  <!-- Custom Styles for Distance Labels -->
+  <!-- Custom Styles for Map Labels -->
   <style>
-    /* สไตล์สำหรับป้ายแสดงระยะทางรวม */
+    /* Style for distance label */
     .distance-label {
       background-color: rgba(255, 255, 255, 0.9);
       border: 2px solid #FFDA4A;
       border-radius: 15px;
       padding: 5px 10px;
-      font-family: 'Mali', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       font-weight: 600;
       font-size: 13px;
       color: #7c6c77;
@@ -174,13 +192,13 @@
       animation: distance-pulse 2s infinite;
     }
     
-    /* สไตล์สำหรับป้ายแสดงระยะทางที่เหลือ */
+    /* Style for remaining distance label */
     .remaining-distance {
       background-color: rgba(255, 255, 255, 0.9);
       border: 2px solid #80E8B6;
       border-radius: 15px;
       padding: 5px 10px;
-      font-family: 'Mali', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       font-weight: 600;
       font-size: 13px;
       color: #7c6c77;
@@ -195,23 +213,7 @@
       font-size: 16px;
     }
     
-    /* แอนิเมชั่นสำหรับป้ายระยะทาง */
-    @keyframes distance-pulse {
-      0% {
-        transform: scale(1);
-        opacity: 0.9;
-      }
-      50% {
-        transform: scale(1.05);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 0.9;
-      }
-    }
-    
-    /* ปรับแต่ง popup ของ leaflet */
+    /* Custom Leaflet popups */
     .leaflet-popup-content-wrapper {
       background: rgba(255, 255, 255, 0.9);
       border-radius: 20px;
@@ -227,7 +229,7 @@
     .leaflet-popup-content {
       margin: 13px 19px;
       line-height: 1.4;
-      font-family: 'Mali', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       font-size: 14px;
       color: #7c6c77;
     }
@@ -250,13 +252,15 @@
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <!-- ตัวแปรสำหรับแชร์ระหว่างไฟล์ JS -->
+  <!-- Shared map variable -->
   <script>
-    // ตัวแปรแชร์สำหรับแผนที่ (จะได้เข้าถึงจาก rating.js ได้)
+    // Shared variable for map (accessible from rating.js)
     let map;
   </script>
   <!-- Custom JS -->
   <script src="js/sound.js"></script>
+  <script src="js/tiktok.js"></script>
+  <script src="js/queue.js"></script>
   <script src="js/map.js"></script>
   <script src="js/rating.js"></script>
   <script src="js/ui.js"></script>
