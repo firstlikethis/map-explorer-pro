@@ -123,6 +123,20 @@
     </div>
   </div>
   
+  <!-- Welcome Popup -->
+  <div id="welcome-popup" class="welcome-popup">
+    <div class="welcome-popup-content">
+      <div class="welcome-header">
+        <div class="welcome-emoji">👋</div>
+        <div class="welcome-title">Welcome!</div>
+      </div>
+      <div class="welcome-user">
+        <img id="welcome-user-pic" src="/assets/images/default-avatar.png" class="welcome-avatar">
+        <span id="welcome-username">New Viewer</span>
+      </div>
+    </div>
+  </div>
+  
   <!-- Notification Toast -->
   <div id="notification" class="notification">
     <div class="notification-content">
@@ -175,80 +189,6 @@
       <source src="assets/sounds/transition.mp3" type="audio/mp3">
     </audio>
   </div>
-
-  <!-- Custom Styles for Map Labels -->
-  <style>
-    /* Style for distance label */
-    .distance-label {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: 2px solid #FFDA4A;
-      border-radius: 15px;
-      padding: 5px 10px;
-      font-family: 'Quicksand', sans-serif;
-      font-weight: 600;
-      font-size: 13px;
-      color: #7c6c77;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-      animation: distance-pulse 2s infinite;
-    }
-    
-    /* Style for remaining distance label */
-    .remaining-distance {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: 2px solid #80E8B6;
-      border-radius: 15px;
-      padding: 5px 10px;
-      font-family: 'Quicksand', sans-serif;
-      font-weight: 600;
-      font-size: 13px;
-      color: #7c6c77;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-      display: flex;
-      align-items: center;
-      z-index: 1000;
-    }
-    
-    .remaining-distance-icon {
-      margin-right: 5px;
-      font-size: 16px;
-    }
-    
-    /* Custom Leaflet popups */
-    .leaflet-popup-content-wrapper {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
-      border: 3px solid #FF78A9;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .leaflet-popup-tip {
-      background: #FF78A9;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .leaflet-popup-content {
-      margin: 13px 19px;
-      line-height: 1.4;
-      font-family: 'Quicksand', sans-serif;
-      font-size: 14px;
-      color: #7c6c77;
-    }
-    
-    .custom-popup {
-      display: flex;
-      align-items: center;
-      padding: 5px;
-    }
-    
-    .custom-popup-icon {
-      margin-right: 8px;
-      font-size: 18px;
-    }
-    
-    .custom-popup-text {
-      font-weight: 600;
-    }
-  </style>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>

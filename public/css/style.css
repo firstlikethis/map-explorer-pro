@@ -1005,3 +1005,82 @@ body {
   background: var(--secondary-light);
   border-radius: 10px;
 }
+
+/* Welcome Popup */
+.welcome-popup {
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 2500;
+  overflow: hidden;
+  width: 220px;
+  max-width: 90%;
+  border: 3px solid var(--primary-color);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              opacity 0.3s ease;
+}
+
+.welcome-popup.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.welcome-popup-content {
+  padding: 0;
+}
+
+.welcome-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--lavender-color));
+  color: white;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-emoji {
+  font-size: 20px;
+  margin-right: 10px;
+  animation: wave 1.5s infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(20deg); }
+  75% { transform: rotate(-15deg); }
+}
+
+.welcome-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.welcome-user {
+  padding: 10px 15px;
+  background: white;
+  display: flex;
+  align-items: center;
+}
+
+.welcome-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 2px solid var(--primary-light);
+  object-fit: cover;
+}
+
+#welcome-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-color);
+}

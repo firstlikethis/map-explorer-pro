@@ -267,6 +267,9 @@ function connectToTikTokLive() {
 
 // Set up TikTok event handlers
 function setupTikTokEventHandlers() {
+  // Keep track of users who have joined
+  const joinedUsers = new Set();
+  
   // Handle comments
   tiktokConnection.on('chat', comment => {
     // Using 'chat' event instead of 'comment' - this is the correct event name
@@ -305,9 +308,27 @@ function setupTikTokEventHandlers() {
     broadcastToTikTokClients(commentData);
   });
   
-  // Log all events to help with debugging
+  // Handle member join events
   tiktokConnection.on('member', member => {
     console.log(`Member joined: ${member.uniqueId || member.userId}`);
+    
+    const username = member.uniqueId || member.userId || 'TikTok User';
+    const profilePic = member.profilePictureUrl || '';
+    
+    // Check if this is a new user
+    if (!joinedUsers.has(username)) {
+      joinedUsers.add(username);
+      
+      // Broadcast welcome event to clients
+      const welcomeData = {
+        event: 'welcome',
+        username,
+        profilePic,
+        timestamp: new Date().toISOString()
+      };
+      
+      broadcastToTikTokClients(welcomeData);
+    }
   });
   
   // Handle room info updates
